@@ -12,29 +12,29 @@ def Main():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    # connect to server on local computer
+    # Connect to the socket at the specified port and IP address. 
     server.connect((ip, port))
 
-    # message you send to server
-    # message = "V for vendetta"
+    # Main loop for clients to receive and send messages to the server.
     while True:
+        # List of input streams. 
         sockets_list = [sys.stdin, server]
-        read_sockets, write_socket, error_socket = select.select(
+        
+        # Initialize read sockets to process inputs from the server.
+        read_sockets, _, _ = select.select(
             sockets_list, [], [])
 
         for socks in read_sockets:
-
-            # if we're getting a message
+            # Display messages received from the server. 
             if socks == server:
-                message = socks.recv(2048)
+                message = socks.recv(4096)
                 print(message.decode('UTF-8'))
+            
+            # Read and send messages from the client. 
             else:
-
                 message = sys.stdin.readline().strip()
                 server.send(message.encode('UTF-8'))
-                data = server.recv(2048)
+                data = server.recv(4096)
                 print(str(data.decode('UTF-8')))
-
-
 if __name__ == '__main__':
     Main()
