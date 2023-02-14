@@ -18,13 +18,18 @@ def create_account(name, connection):
     while uuid in accounts:
         uuid  = str(random.randint(0,1000))
     accounts[uuid] = name
-    live_users[uuid] = connection
-    return f"\nNew account created! User ID: {uuid} \n"
+    return f"\nNew account created! User ID: {uuid}. Please log in. \n"
 
 # Delete the account from the list of accounts. 
 def delete_account(uuid): 
     accounts.pop(uuid, None)
+    pending_messages.pop(uuid, None)
+    live_users.pop(uuid, None)
     return f"\nAccount with User ID {uuid} has been deleted\n"
+
+def disconnect_user(uuid):
+    live_users.pop(uuid, None)
+    return f"\nAccount with User ID {uuid} has disconnected\n"
 
 # Iterate through the accounts and generate a string with all the UUIDs and account names.
 def list_accounts(): 
@@ -41,7 +46,7 @@ def login(uuid, connection):
         return f"\nUser {uuid} already logged in, please try again."
     else: 
         live_users[uuid] = connection
-        while pending_messages[uuid]:
+        while pending_messages.get(uuid):
             send_msg(uuid, pending_messages[uuid][0])
             pending_messages[uuid].pop(0)
         return f"\nLogged in as user {uuid}!"
@@ -53,9 +58,14 @@ def send_msg(uuid, msg):
     return f"\nMessage sent to {uuid}"
 
 # Iterate through the accounts and generate a string with all the UUIDs and account names.
-def filter_accounts(): 
-    acc_lst = [accounts[acc] for acc in accounts]
-    
+def filter_accounts(filter_wildcard): 
+    acc_lst = [(acc, accounts[acc]) for acc in accounts]
+    r = re.compile(filter_wildcard)
+    filtered_list = list(filter(lambda x: r.match(x[1]), acc_lst))
+    acc_str = "\nFiltered Accounts:\n"
+    for acc in filtered_list:
+        next_acc = "\n" + acc[1] + " (UUID: " + acc[0] + ")" + "\n"
+        acc_str += next_acc
     return acc_str
 
 # The main wire protocol specifying how information should be sent and received. 
@@ -66,7 +76,8 @@ def wire_protocol(connection):
         msg = connection.recv(4096)
         msg_str = msg.decode('UTF-8')
         msg_list = msg_str.split('|')
-        op_code = msg_list[0]
+        msg_list = [elt.strip() for elt in msg_list]
+        op_code = msg_list[0].strip()
 
         # Create an account.
         # Usage: c
@@ -93,10 +104,17 @@ def wire_protocol(connection):
         elif op_code == 'd':
             msg = delete_account(msg_list[1])
     
-        # Filter accounts using a certain wildcard
+        # Filter accounts using a certain wildcard.
         # Usage: f|<filter_wildcard>
         elif op_code == 'f':
             msg = filter_accounts(msg_list[1])
+        
+        # Disconnect a user.
+        # Usage: q|<uuid_to_disconnect>
+        elif op_code == 'q':
+            msg = disconnect_user(msg_list[1])
+            connection.send(msg.encode('UTF-8')) 
+            live_users[msg_list[1]].close()
 
         # Handles an invalid request and lists the correct usage for the user. 
         else:
@@ -131,6 +149,6 @@ def Main():
         connection, address = server.accept()
         print('\nConnected to :', address[0], ':', address[1])
         start_new_thread(wire_protocol, (connection,))
-        
+
 if __name__ == '__main__':
     Main()

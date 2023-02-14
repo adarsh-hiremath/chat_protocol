@@ -27,13 +27,13 @@ def Main():
         for socks in read_sockets:
             # Display messages received from the server. 
             if socks == server:
-                message = socks.recv(4096)
-                print(message.decode('UTF-8'))
+                msg = socks.recv(4096)
+                print(msg.decode('UTF-8'))
             
-            # Read and send messages from the client. 
+            # Send requests to the server from the client. 
             else:
-                message = sys.stdin.readline().strip()
-                server.send(message.encode('UTF-8'))
+                msg = sys.stdin.readline().strip()
+                server.send(msg.encode('UTF-8'))
                 data = server.recv(4096)
                 print(str(data.decode('UTF-8')))
 if __name__ == '__main__':

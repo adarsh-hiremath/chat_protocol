@@ -44,8 +44,17 @@ _This is italic text_
 > > > ...or with spaces between arrows.
 
 
-## Lists
-
+## List of edge cases / modifications to consider:
++ Passing in IP address and port number through the command line. 
++ Handling too many arguments passed in through the command line. 
++ Handling spaces before and after the delimeter (will likely need to do strip())
++ Handling spaces before and after the operational keyword.
++ Testing what happens when two users try to log in at the same time or one user logs in when the other is active.
++ Sending messages to a deleted account. 
++ What if we create two clients from the same client and tried to have them message each other.
++ Do operations on UUIDs that don't exist.
++ Handling ill-formed regex strings
++ 
 Unordered
 
 + Create a list by starting a line with `+`, `-`, or `*`
