@@ -8,7 +8,7 @@ def Main():
     ip = "127.0.0.1"
     port = 2048
 
-    # create a TCP socket connection
+    # Create a TCP socket connection.
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
