@@ -43,19 +43,19 @@ def list_accounts():
 def login(uuid, connection): 
     if uuid in live_users:
         print(f"User {uuid} has already logged in\n")
-        return f"\nUser {uuid} already logged in, please try again."
+        return f"\nUser {uuid} already logged in, please try again.\n"
     else: 
         live_users[uuid] = connection
         while pending_messages.get(uuid):
             send_msg(uuid, pending_messages[uuid][0])
             pending_messages[uuid].pop(0)
-        return f"\nLogged in as user {uuid}!"
+        return f"\nLogged in as user {uuid}!\n"
 
 # Send a message to the given UUID.
 def send_msg(uuid, msg):
     print(f"connection: {live_users[uuid]}")
     live_users[uuid].send(msg.encode('UTF-8'))
-    return f"\nMessage sent to {uuid}"
+    return f"\nMessage sent to {uuid}.\n"
 
 # Iterate through the accounts and generate a string with all the UUIDs and account names.
 def filter_accounts(filter_wildcard): 

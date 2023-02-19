@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package chatapp;
+
+// The greeting service definition.
+service ChatApp {
+  rpc createAccount (AccountName) returns (AccountID) {};
+  rpc logIn (AccountID) returns (ServerReply) {};
+  rpc listAccounts (Empty) returns (ServerReply) {};
+  rpc filterAccounts (FilterString) returns (ServerReply) {};
+  rpc logOut (AccountID) returns (ServerReply) {};
+  rpc sendMessage (Chat) returns (ServerReply) {};
+  rpc listenForMessages (Empty) returns (stream Chat) {};
+}
+
+// All information used in storing an account.
+message Account {
+  int32 id = 1;
+  string name = 2;
+  bool active = 3;
+}
+
+// Account name.
+message AccountName {
+  string name = 1;
+}
+
+// Account ID.
+message AccountID {
+  int32 id = 1;
+  ServerReply reply = 2;
+}
+
+// Response from the server.
+message ServerReply {
+  string message = 1;
+}
+
+// Used for RPCs that don't require an input.
+message Empty {}
+
+// Message format.
+message Chat {
+  string name = 1;
+  string message = 2;
+}
+
+// String to filter by.
+message FilterString {
+  string filter = 1;
+}
+
+
