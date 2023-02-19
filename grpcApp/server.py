@@ -11,148 +11,179 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
     def __init__(self):
 
-        # A list with all the server reply history
-        self.serverReplies = []
-
-        # A dictionary with usernames as keys and pending messages queues as values. 
+        # A dictionary with key: username, value: user's pending messages queue. 
         self.messages = {}
 
-        # A list with all of the account usernames 
+        # A list with all of account usernames.
         self.accounts = []
 
-        # A list to store the users that are currently logged in.
+        # A list with usernames of accounts that are currently logged in.
         self.live_users = []
 
-    def createAccount(self, request, context):
-        """Missing associated documentation comment in .proto file."""
 
-        # check if the account already exists
+    def createAccount(self, request, context):
+        """Create an account. (c|<username>)"""
+
+        print(f"user {request.username} requesting account creation")
+
+        # Check if the username is already in use.
         if request.username in self.accounts:
             msg = colored(f"\nAccount {request.username} already exists!\n", "red")
+            print(f"user {request.username} account creation rejected")
             return app.ServerReply(message=msg)
 
-        # check for a valid username
+        # Check that the username is a valid alphanumeric.
         if not re.fullmatch("\w{2,20}", request.username):
             msg = colored(f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
+            print(f"user {request.username} account creation rejected")
             return app.ServerReply(message=msg)
 
-        # successful registration
+        # Register the user.
         self.accounts.append(request.username)
         msg = colored(f"\nWelcome, {request.username}! Please log in. \n", "green")
+        print(f"user {request.username} account created")
+
         return app.ServerReply(message=msg)
 
+
     def logIn(self, request: app.Account, context):
-        """Missing associated documentation comment in .proto file."""
+        """Log in as a specific user. (l|<username>)"""
+
+        print(f"login as user {request.username} requested")
+
+        # Check if the user is already logged in.
         if request.username in self.live_users:
             msg = f"\nUser {request.username} already logged in, please try again.\n"
             msg = colored(msg, "red")
+            print(f"login as user {request.username} denied")
             return app.LoginReply(success=False, message=msg)
+
+        # Check if the user has created an account.
         elif request.username not in self.accounts:
             msg = f"\nUser {request.username} is not a valid user, please try again.\n"
             msg = colored(msg, "red")
+            print(f"login as user {request.username} denied")
             return app.LoginReply(success=False, message=msg)
+
+        # Log in as the given user.
         else: 
             self.live_users.append(request.username)
             msg = f"\nLogin successful - welcome back {request.username}!\n"
             msg = colored(msg, "green")
+            print(f"login as user {request.username} completed")
             return app.LoginReply(success=True, message=msg, username=request.username)
 
+
     def listAccounts(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """List all of the registered users. (u)"""
+
+        print(f"listing accounts for user {request.username}")
+
+        # Output a list of users, and whether they are currently online.
         if len(list(self.accounts)) > 0:
             str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                        (colored("(live)", "green") if u in self.live_users else ""))
-                        for u in self.accounts]) + "\n"
+                    (colored("(live)", "green") if u in self.live_users else ""))
+                    for u in self.accounts]) + "\n"
+        
+        # No registered users on the server.
         else:
-            str = colored("\nNo existing accounts!\n", "red")
+            str = colored("\nNo existing users!\n", "red")
+
         return app.ServerReply(message=str)
 
+
     def filterAccounts(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Filter accounts using a regex. (f|<filter_regex>)"""
+
+        print(f"filtering accounts for user {request.username}")
+
+        # Find a list of matching accounts.
         fltr = request.filter
         fun = lambda x: re.fullmatch(fltr, x)
         filteredAccounts = list(filter(fun, self.accounts))
+
+        # Output a list of users, and whether they are currently online.
         if len(list(filteredAccounts)) > 0:
             str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                        (colored("(live)", "green") if u in self.live_users else ""))
-                        for u in filteredAccounts]) + "\n"
+                    (colored("(live)", "green") if u in self.live_users else ""))
+                    for u in filteredAccounts]) + "\n"
+
+        # No matching accounts on the server.
         else:
-            str = colored("\nNo accounts found!\n", "red")
+            str = colored("\nNo matching users!\n", "red")
 
         return app.ServerReply(message=str)
 
-    # def logOut(self, request, context):
-    #     """Missing associated documentation comment in .proto file."""
-    #     if request.username in self.live_users: 
-    #         self.live_users.remove(request.username)
-    #         msg = colored(f"\nUser {request.username} logged out!\n", "green")
-    #     else:
-    #         msg = colored(f"\nUser {request.username} not found? Contact the\n", "red")
-    #     return app.ServerReply(message=msg)
 
     def sendMessage(self, request: app.Message, context):
-        """Missing associated documentation comment in .proto file."""
-        # this is only for the server console
-        print(f"[{request.senderName}] {request.message}")
-        # Add it to the chat history
+        """Send a message to a specified other user. (s|<username>|<message>)"""
+
+        print(f"user {request.senderName} requesting message to user {request.receiverName}")
+
+        # Check if the recipient is a registered user and send message.
         if request.recipientName in self.accounts:
             if self.messages.get(request.recipientName):
                 self.messages[request.recipientName].append(request)
             else:
                 self.messages[request.recipientName] = [request]
             msg = colored("\nMessage sent!\n", "green")
+            print(f"user {request.senderName} message to user {request.receiverName} sent")
+
+        # Recipient is not a registered user.
         else:
             msg = colored("\nMessage failed to send! Verify recipient username.\n", "red")
+            print(f"user {request.senderName} message to user {request.receiverName} denied")
         
         return app.ServerReply(message=msg)
     
+
     def deleteAccount(self, request: app.Account, context):
-        """Delete a specified account by username."""
-        # this is only for the server console
-        # print(f"[{request.senderName}] {request.message}")
-        # Add it to the chat history
-        response = app.ServerReply()
+        """Delete the current user's account. (d|<confirm_username>)"""
+        
+        print(f"user {request.username} requesting account deletion")
+
+        # User can be deleted. Remove from associated data structures.
         if request.username in self.accounts:
             self.accounts.remove(request.username)
             if self.messages.get(request.username): 
                 self.messages.pop(request.username)
-            response.message = colored(f"\nAccount {request.username} successfully deleted!\n", "green")
-        else:
-            response.message = colored(f"\nYour account has already been deleted.\n", "red")
+            msg = colored(f"\nAccount {request.username} successfully deleted!\n", "green")
+            print(f"user {request.username} account deleted")
 
-        return response
+        # User has already been deleted.
+        else:
+            msg = colored(f"\nYour account has already been deleted.\n", "red")
+            print(f"user {request.username} account already deleted")
+
+        return app.ServerReply(message=msg)
+
 
     def listenForMessages(self, request_iterator, context):
-        """This is a stream that continuously sends chats."""
-        # each client thread creates
+        """Stream run in a thread by client, listens for messages."""
+
+        print(f"user {request_iterator.username} listening stream opened")
+
+        # Polls while user is still online.
         while context.is_active():
-            # check if there are messages to be displayed
+            
+            # Stream messages to the client one at a time.
             if self.messages.get(request_iterator.username):
                 msg = self.messages[request_iterator.username].pop(0)
                 yield msg
         
+        # Disconnect the client.
         self.live_users.remove(request_iterator.username)
-        print(f"User {request_iterator.username} disconnected!\n")
 
-    def listenForReplies(self, request_iterator, context):
-        """This is a stream that continuously sends chats."""
-        # each client thread creates
-        while context.is_active():
-            # check if there are messages to be displayed
-            if len(self.serverReplies) > 0:
-                msg = self.serverReplies.pop(0)
-                yield msg
-
-        self.serverReplies = []
+        print(f"user {request_iterator.username} disconnected")
 
 
-
+# Run the server upon file execution.
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=25))
     rpc.add_ChatAppServicer_to_server(ChatApp(), server)
     server.add_insecure_port(ip + ':' + str(port))
     server.start()
-    print(f"Server started, listening on port {port}.")
+    print(f"server started, listening on port {port}.")
     server.wait_for_termination()
 
 

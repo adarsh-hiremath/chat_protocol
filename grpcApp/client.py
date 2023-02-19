@@ -11,22 +11,13 @@ class Client:
     def __init__(self):
         self.username = None
         self.loggedIn = False
-        # create a gRPC channel + stub
         channel = grpc.insecure_channel(ip + ':' + str(port))
         self.conn = rpc.ChatAppStub(channel)
-        # create new listening thread for when new message streams come in
-        self.replyThread = threading.Thread(target=self.__listen_for_replies)
         self.messageThread = threading.Thread(target=self.__listen_for_messages)
         self.sendThread = threading.Thread(target=self.send_message)
-        # messageThread = threading.Thread(target=self.__listen_for_messages)
-        # sendThread = threading.Thread(target=self.send_message)
 
-        # print("starting threads")
-        self.replyThread.start()
-        # messageThread.start()
+        # thread for sending information to the server
         self.sendThread.start()
-        # self.conn.createAccount(app.AccountName(name=self.username))
-        # print("send thread started")
 
     def __listen_for_messages(self):
         """Thread that listens for messages from other clients"""
@@ -35,11 +26,6 @@ class Client:
             str = colored(f"[{msg.senderName}] ", "grey")
             print(f"{str} {msg.message}\n")
     
-    def __listen_for_replies(self):
-        """Thread that listens for server responses/feedback"""
-        # print("reply thread started")
-        for reply in self.conn.listenForReplies(app.Empty()):
-            print(reply.message)
 
     def send_message(self):
         """Used to gather input from the user"""
