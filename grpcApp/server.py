@@ -89,35 +89,32 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
                 self.messages[request.recipientID] = [request]
             msg = ""
         else:
-            msg = colored("Message failed to send! Verify recipient ID.", "red")
+            msg = colored("\nMessage failed to send! Verify recipient ID.\n", "red")
         
         return app.ServerReply(message=msg)
 
     def listenForMessages(self, request_iterator, context):
         """This is a stream that continuously sends chats."""
-        lastMsgIdx = 0
         # each client thread creates
         while context.is_active():
             # check if there are messages to be displayed
             if self.messages.get(request_iterator.id):
-                while len(self.messages[request_iterator.id]) > lastMsgIdx:
-                    msg = self.messages[request_iterator.id][lastMsgIdx]
-                    lastMsgIdx += 1
-                    yield msg
+                msg = self.messages[request_iterator.id].pop(0)
+                yield msg
         
         self.live_users.remove(request_iterator.id)
         print(f"User {request_iterator.id} disconnected!\n")
 
     def listenForReplies(self, request_iterator, context):
         """This is a stream that continuously sends chats."""
-        lastIdx = 0
         # each client thread creates
-        while True:
+        while context.is_active():
             # check if there are messages to be displayed
-            while len(self.serverReplies) > lastIdx:
-                msg = self.serverReplies[lastIdx]
-                lastIdx += 1
+            if len(self.serverReplies) > 0:
+                msg = self.serverReplies.pop(0)
                 yield msg
+
+        self.serverReplies = []
 
 
 
