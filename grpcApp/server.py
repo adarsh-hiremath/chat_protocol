@@ -1,5 +1,5 @@
 from concurrent import futures
-import logging, grpc, time, random
+import logging, grpc, time, random, re
 import chatapp_pb2 as app
 import chatapp_pb2_grpc as rpc
 from termcolor import colored
@@ -11,7 +11,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
     def __init__(self):
 
-        # A list with all the chat history
+        # A list with all the server reply history
         self.serverReplies = []
 
         # A dictionary with usernames as keys and pending messages queues as values. 
@@ -56,9 +56,17 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
     def filterAccounts(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        fltr = request.filter
+        fun = lambda id: re.fullmatch(fltr, self.accounts[id])
+        filteredAccounts = list(filter(fun, self.accounts))
+        if len(list(filteredAccounts)) > 0:
+            str = "\n" + "\n".join([f"{self.accounts[id]} ({id})" 
+                            for id in filteredAccounts]) + "\n"
+            str = colored(str, "blue")
+        else:
+            str = colored("\nNo accounts found!\n", "red")
+
+        return app.ServerReply(message=str)
 
     def logOut(self, request, context):
         """Missing associated documentation comment in .proto file."""

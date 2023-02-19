@@ -33,7 +33,8 @@ class Client:
         """Thread that listens for messages from other clients"""
         # print("message thread started")
         for msg in self.conn.listenForMessages(app.AccountID(id=self.id)):
-            print(f"\n[{msg.senderName}] {msg.message}")
+            str = colored(f"[{msg.senderName}] ", "grey")
+            print(f"\n{str} {msg.message}"),
     
     def __listen_for_replies(self):
         """Thread that listens for server responses/feedback"""
@@ -124,8 +125,14 @@ class Client:
         
             # # Filter accounts using a certain wildcard.
             # # Usage: f|<filter_wildcard>
-            # elif op_code == 'f':
-            #     msg = filter_accounts(msg_list[1])
+            elif op_code == 'f':
+                if len(msg_list) != 2:
+                    print(invalid_args_msg)
+                    print(colored("Usage:   f|<filter_wildcard>\n", "red"))
+                    continue
+                msg = app.FilterString(filter=msg_list[1])
+                response = self.conn.filterAccounts(msg)
+                print(response.message)
             
             # Log out from your account.
             # Usage: q
