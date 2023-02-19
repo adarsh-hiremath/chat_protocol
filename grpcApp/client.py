@@ -10,7 +10,6 @@ class Client:
 
     def __init__(self):
         self.username = None
-        self.id = -1
         self.loggedIn = False
         # create a gRPC channel + stub
         channel = grpc.insecure_channel(ip + ':' + str(port))
@@ -32,9 +31,9 @@ class Client:
     def __listen_for_messages(self):
         """Thread that listens for messages from other clients"""
         # print("message thread started")
-        for msg in self.conn.listenForMessages(app.AccountID(id=self.id)):
+        for msg in self.conn.listenForMessages(app.Account(username=self.username)):
             str = colored(f"[{msg.senderName}] ", "grey")
-            print(f"\n{str} {msg.message}"),
+            print(f"{str} {msg.message}\n")
     
     def __listen_for_replies(self):
         """Thread that listens for server responses/feedback"""
@@ -52,7 +51,7 @@ class Client:
 
             # Get input from user, then preprocess it
             # time.sleep(1)
-            msg1 = colored(f"[{self.username}] ", "grey")
+            msg1 = colored(f"", "grey")
             msg2 = colored("Create an account or log in: \n", "grey", attrs=["bold"])
             msg_str = input(msg1 if self.loggedIn else msg2)
             msg_list = msg_str.split('|')
@@ -66,32 +65,82 @@ class Client:
                     print(invalid_args_msg)
                     print(colored("Usage:   c|<username>\n", "red"))
                     continue
-                msg = self.conn.createAccount(app.AccountName(name=msg_list[1]))
-                self.username = msg.name
-                self.id = msg.id
-                print(colored(f"\nAccount created! User ID: {msg.id}\n", "green"))
+
+                # Check if user is already logged in
+                if self.loggedIn:
+                    print(colored("\nPlease log out first!\n", "red"))
+                    continue
+
+                msg = self.conn.createAccount(app.Account(username=msg_list[1]))
+                print(msg.message)
             
             # Log into an account.
-            # Usage: l|<uuid>
+            # Usage: l|<username>
             elif op_code == 'l':
                 if len(msg_list) != 2:
                     print(invalid_args_msg)
-                    print(colored("Usage:   l|<uuid>\n", "red"))
+                    print(colored("Usage:   l|<username>\n", "red"))
                     continue
 
-                # Check if user is valid and not logged in
-                try:
-                    id = int(msg_list[1])
-                except:
-                    print(colored("\nInvalid UUID!\n", "red"))
+                # Check if user is already logged in
+                if self.loggedIn:
+                    print(colored("\nPlease log out first!\n", "red"))
                     continue
-                response = self.conn.logIn(app.AccountID(id=id))
+
+                response = self.conn.logIn(app.Account(username=msg_list[1]))
                 if response.success:
                     self.username = response.username
-                    self.id = id
                     self.loggedIn = True
                     self.messageThread.start()    # Listen for new messages
                 print(response.message)
+
+            # Send a message to a user. 
+            # Usage: s|<recipient_username>|<message>
+            elif op_code == 's':
+                if len(msg_list) != 3:
+                    print(invalid_args_msg)
+                    print(colored("Usage:   s|<recipient_username>|<message>\n", "red"))
+                    continue
+
+                # Initialize and send a message
+                msg = app.Message()
+                msg.senderName = self.username
+                msg.recipientName = msg_list[1]
+                msg.message = msg_list[2]
+                response = self.conn.sendMessage(msg)
+                if response.message: print(response.message)
+
+            # Filter accounts using a regex.
+            # Usage: f|<filter_regex>
+            elif op_code == 'f':
+                if len(msg_list) != 2:
+                    print(invalid_args_msg)
+                    print(colored("Usage:   f|<filter_regex>\n", "red"))
+                    continue
+                msg = app.FilterString(filter=msg_list[1])
+                response = self.conn.filterAccounts(msg)
+                print(response.message)
+
+            # Delete your account.
+            # Usage: d
+            elif op_code == 'd':
+                if len(msg_list) != 2:
+                    print(invalid_args_msg)
+                    print(colored("Usage:   d\n", "red"))
+                    continue
+                
+                if not self.loggedIn:
+                    print(colored("\nPlease log in first!\n", "red"))
+                    continue
+
+                if self.username != msg_list[1]:
+                    print(colored("\nIncorrect username for confirmation.\n", "red"))
+                    continue
+
+                msg = self.conn.deleteAccount(app.Account(username=self.username))
+
+                print(msg.message)
+                sys.exit(0)
 
             # List all users and their names. 
             # Usage: u
@@ -102,59 +151,29 @@ class Client:
                     continue
                 response = self.conn.listAccounts(app.Empty())
                 print(response.message)
-
-            # Send a message to a user. 
-            # Usage: s|<recipient_uuid>|<message>
-            elif op_code == 's':
-                if len(msg_list) != 3:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   s|<recipient_uuid>|<message>\n", "red"))
-                    continue
-                msg = app.Message()
-                msg.senderID = self.id
-                msg.senderName = self.username
-                msg.message = msg_list[2]
-                msg.recipientID = int(msg_list[1])
-                response = self.conn.sendMessage(msg)
-                print(response.message)
-
-            # # Delete an account
-            # # Usage: d|<uuid_to_delete>
-            # elif op_code == 'd':
-            #     msg = delete_account(msg_list[1])
-        
-            # # Filter accounts using a certain wildcard.
-            # # Usage: f|<filter_wildcard>
-            elif op_code == 'f':
-                if len(msg_list) != 2:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   f|<filter_wildcard>\n", "red"))
-                    continue
-                msg = app.FilterString(filter=msg_list[1])
-                response = self.conn.filterAccounts(msg)
-                print(response.message)
             
             # Log out from your account.
             # Usage: q
-            elif op_code == 'q':
-                if len(msg_list) != 1:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   q\n", "red"))
-                    continue
-                msg = self.conn.logOut(app.AccountID(id=self.id))
-                print(msg.message)
-                sys.exit()
+            # elif op_code == 'q':
+            #     if len(msg_list) != 1:
+            #         print(invalid_args_msg)
+            #         print(colored("Usage:   q\n", "red"))
+            #         continue
+            #     msg = self.conn.logOut(app.Account(username=self.username))
+
+            #     print(msg.message)
 
             # Usage help.
             # Usage: h
             elif op_code == 'h':
                 msg = "\nUsage help below:\n"
                 msg += "\nCreate an account.        c|<username>"
-                msg += "\nLog into an account.      l|<uuid>"
+                msg += "\nLog into an account.      l|<username>"
+                msg += "\nSend a message.           s|<recipient_username>|<message>"
+                msg += "\nFilter accounts.          f|<filter_regex>"
+                msg += "\nDelete your account.      d|<confirm_username>"
                 msg += "\nList users and names.     u"
-                msg += "\nSend a message.           s|<recipient_uuid>|<message>"
-                msg += "\nDelete an account.        d|<uuid_to_delete>\n"
-                msg += "\nLog out of your account.  q"
+                # msg += "\nLog out of your account.  q"
                 msg += "\nUsage help (this page).   h\n"
                 msg = colored(msg, 'red')
                 print(msg)  

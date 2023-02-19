@@ -17,93 +17,122 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
         # A dictionary with usernames as keys and pending messages queues as values. 
         self.messages = {}
 
-        # A dictionary with UUIDs as keys and account names as values. 
-        self.accounts = {}
+        # A list with all of the account usernames 
+        self.accounts = []
 
         # A list to store the users that are currently logged in.
         self.live_users = []
 
     def createAccount(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        uuid = random.randint(0, 1000)
-        while uuid in self.accounts:
-            uuid  = random.randint(0,1000)
-        self.accounts[uuid] = request.name
-        print(f"New account created! User ID: {uuid}")
-        return app.Account(id=uuid, name=request.name)
 
-    def logIn(self, request: app.AccountID, context):
+        # check if the account already exists
+        if request.username in self.accounts:
+            msg = colored(f"\nAccount {request.username} already exists!\n", "red")
+            return app.ServerReply(message=msg)
+
+        # check for a valid username
+        if not re.fullmatch("\w{2,20}", request.username):
+            msg = colored(f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
+            return app.ServerReply(message=msg)
+
+        # successful registration
+        self.accounts.append(request.username)
+        msg = colored(f"\nWelcome, {request.username}! Please log in. \n", "green")
+        return app.ServerReply(message=msg)
+
+    def logIn(self, request: app.Account, context):
         """Missing associated documentation comment in .proto file."""
-        if request.id in self.live_users:
-            msg = f"\nUser {request.id} already logged in, please try again.\n"
+        if request.username in self.live_users:
+            msg = f"\nUser {request.username} already logged in, please try again.\n"
             msg = colored(msg, "red")
             return app.LoginReply(success=False, message=msg)
-        elif not self.accounts.get(request.id):
-            msg = f"\nUser {request.id} is not a valid user, please try again.\n"
+        elif request.username not in self.accounts:
+            msg = f"\nUser {request.username} is not a valid user, please try again.\n"
             msg = colored(msg, "red")
             return app.LoginReply(success=False, message=msg)
         else: 
-            self.live_users.append(request.id)
-            msg = f"\nUser {request.id} logged in - welcome back {self.accounts[request.id]}!\n"
+            self.live_users.append(request.username)
+            msg = f"\nLogin successful - welcome back {request.username}!\n"
             msg = colored(msg, "green")
-            return app.LoginReply(success=True, message=msg, username=self.accounts[request.id])
+            return app.LoginReply(success=True, message=msg, username=request.username)
 
     def listAccounts(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        str = "\n" + "\n".join([f"{self.accounts[id]} ({id})" for id in self.accounts]) + "\n"
-        str = colored(str, "blue")
+        if len(list(self.accounts)) > 0:
+            str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
+                        (colored("(live)", "green") if u in self.live_users else ""))
+                        for u in self.accounts]) + "\n"
+        else:
+            str = colored("\nNo existing accounts!\n", "red")
         return app.ServerReply(message=str)
 
     def filterAccounts(self, request, context):
         """Missing associated documentation comment in .proto file."""
         fltr = request.filter
-        fun = lambda id: re.fullmatch(fltr, self.accounts[id])
+        fun = lambda x: re.fullmatch(fltr, x)
         filteredAccounts = list(filter(fun, self.accounts))
         if len(list(filteredAccounts)) > 0:
-            str = "\n" + "\n".join([f"{self.accounts[id]} ({id})" 
-                            for id in filteredAccounts]) + "\n"
-            str = colored(str, "blue")
+            str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
+                        (colored("(live)", "green") if u in self.live_users else ""))
+                        for u in filteredAccounts]) + "\n"
         else:
             str = colored("\nNo accounts found!\n", "red")
 
         return app.ServerReply(message=str)
 
-    def logOut(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        if request.id in self.live_users: 
-            self.live_users.remove(request.id)
-            msg = colored(f"\nUser {request.id} logged out!\n", "green")
-        else:
-            msg = colored(f"\nUser {request.id} not found!\n", "red")
-        return app.ServerReply(message=msg)
+    # def logOut(self, request, context):
+    #     """Missing associated documentation comment in .proto file."""
+    #     if request.username in self.live_users: 
+    #         self.live_users.remove(request.username)
+    #         msg = colored(f"\nUser {request.username} logged out!\n", "green")
+    #     else:
+    #         msg = colored(f"\nUser {request.username} not found? Contact the\n", "red")
+    #     return app.ServerReply(message=msg)
 
     def sendMessage(self, request: app.Message, context):
         """Missing associated documentation comment in .proto file."""
         # this is only for the server console
-        print(f"[{request.senderID}] {request.message}")
+        print(f"[{request.senderName}] {request.message}")
         # Add it to the chat history
-        if self.accounts.get(request.recipientID):
-            if self.messages.get(request.recipientID):
-                self.messages[request.recipientID].append(request)
+        if request.recipientName in self.accounts:
+            if self.messages.get(request.recipientName):
+                self.messages[request.recipientName].append(request)
             else:
-                self.messages[request.recipientID] = [request]
-            msg = ""
+                self.messages[request.recipientName] = [request]
+            msg = colored("\nMessage sent!\n", "green")
         else:
-            msg = colored("\nMessage failed to send! Verify recipient ID.\n", "red")
+            msg = colored("\nMessage failed to send! Verify recipient username.\n", "red")
         
         return app.ServerReply(message=msg)
+    
+    def deleteAccount(self, request: app.Account, context):
+        """Delete a specified account by username."""
+        # this is only for the server console
+        # print(f"[{request.senderName}] {request.message}")
+        # Add it to the chat history
+        response = app.ServerReply()
+        if request.username in self.accounts:
+            self.accounts.remove(request.username)
+            if self.messages.get(request.username): 
+                self.messages.pop(request.username)
+            response.message = colored(f"\nAccount {request.username} successfully deleted!\n", "green")
+        else:
+            response.message = colored(f"\nYour account has already been deleted.\n", "red")
+
+        return response
 
     def listenForMessages(self, request_iterator, context):
         """This is a stream that continuously sends chats."""
         # each client thread creates
         while context.is_active():
             # check if there are messages to be displayed
-            if self.messages.get(request_iterator.id):
-                msg = self.messages[request_iterator.id].pop(0)
+            if self.messages.get(request_iterator.username):
+                msg = self.messages[request_iterator.username].pop(0)
                 yield msg
         
-        self.live_users.remove(request_iterator.id)
-        print(f"User {request_iterator.id} disconnected!\n")
+        self.live_users.remove(request_iterator.username)
+        print(f"User {request_iterator.username} disconnected!\n")
 
     def listenForReplies(self, request_iterator, context):
         """This is a stream that continuously sends chats."""

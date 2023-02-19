@@ -1,30 +1,30 @@
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from typing import ClassVar as _ClassVar, Optional as _Optional
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class Account(_message.Message):
-    __slots__ = ["id", "name"]
-    ID_FIELD_NUMBER: _ClassVar[int]
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    id: int
-    name: str
-    def __init__(self, id: _Optional[int] = ..., name: _Optional[str] = ...) -> None: ...
+    __slots__ = ["username"]
+    USERNAME_FIELD_NUMBER: _ClassVar[int]
+    username: str
+    def __init__(self, username: _Optional[str] = ...) -> None: ...
 
-class AccountID(_message.Message):
-    __slots__ = ["id", "reply"]
-    ID_FIELD_NUMBER: _ClassVar[int]
-    REPLY_FIELD_NUMBER: _ClassVar[int]
-    id: int
-    reply: ServerReply
-    def __init__(self, id: _Optional[int] = ..., reply: _Optional[_Union[ServerReply, _Mapping]] = ...) -> None: ...
+class DeleteReply(_message.Message):
+    __slots__ = ["message", "success"]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    message: str
+    success: bool
+    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
 
-class AccountName(_message.Message):
-    __slots__ = ["name"]
-    NAME_FIELD_NUMBER: _ClassVar[int]
-    name: str
-    def __init__(self, name: _Optional[str] = ...) -> None: ...
+class DeleteRequest(_message.Message):
+    __slots__ = ["deleteUser", "requestingUser"]
+    DELETEUSER_FIELD_NUMBER: _ClassVar[int]
+    REQUESTINGUSER_FIELD_NUMBER: _ClassVar[int]
+    deleteUser: str
+    requestingUser: str
+    def __init__(self, deleteUser: _Optional[str] = ..., requestingUser: _Optional[str] = ...) -> None: ...
 
 class Empty(_message.Message):
     __slots__ = []
@@ -47,16 +47,14 @@ class LoginReply(_message.Message):
     def __init__(self, success: bool = ..., message: _Optional[str] = ..., username: _Optional[str] = ...) -> None: ...
 
 class Message(_message.Message):
-    __slots__ = ["message", "recipientID", "senderID", "senderName"]
+    __slots__ = ["message", "recipientName", "senderName"]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
-    RECIPIENTID_FIELD_NUMBER: _ClassVar[int]
-    SENDERID_FIELD_NUMBER: _ClassVar[int]
+    RECIPIENTNAME_FIELD_NUMBER: _ClassVar[int]
     SENDERNAME_FIELD_NUMBER: _ClassVar[int]
     message: str
-    recipientID: int
-    senderID: int
+    recipientName: str
     senderName: str
-    def __init__(self, senderID: _Optional[int] = ..., senderName: _Optional[str] = ..., message: _Optional[str] = ..., recipientID: _Optional[int] = ...) -> None: ...
+    def __init__(self, senderName: _Optional[str] = ..., message: _Optional[str] = ..., recipientName: _Optional[str] = ...) -> None: ...
 
 class ServerReply(_message.Message):
     __slots__ = ["message"]
