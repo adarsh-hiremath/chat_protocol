@@ -27,6 +27,7 @@ def delete_account(uuid):
     live_users.pop(uuid, None)
     return f"\nAccount with User ID {uuid} has been deleted\n"
 
+# Disconnect a specific user from the server. 
 def disconnect_user(uuid):
     live_users.pop(uuid, None)
     return f"\nAccount with User ID {uuid} has disconnected\n"
