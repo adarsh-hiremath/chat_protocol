@@ -68,9 +68,7 @@ Andrew and I decided to process information sent by the client on the server sid
 
 Here, we will specify the functionalities supported by our wire protocol as well as provide further explanation about how our protocol was implemented. Our wire protocol utilizes a delimeter system to distinguish between different requests from the user. Our delimeter is '|', so any requests made to the server must include the appropriate command followed by the delimeter followed by any relevant parameters. For example, sending a message to another user would look something like: 's|<recipientUUID>|<message>.' Below, we've included a complete list of the arguments accepted by our wire protocol. 
 \begin{itemize}
-    \item A client side approach to input validation requires all clients to download updates if any operation specifications change. This results in versioning issues. 
-    \item Validation done on the client side results in code redundancy since every client has duplicate code specifying what inputs are allowed. 
-    \item Clients having access to the type of operations they can use to ping the server results in security issues. 
+    \item 
 \end{itemize}
 
 % \section{Code Reproducibility}
