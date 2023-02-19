@@ -165,6 +165,7 @@
 %----------------------------------------------------------------------------------------
 
 \usepackage{abstract} % Allows abstract customization
+\usepackage{pythonhighlight}
 
 \renewcommand{\abstractnamefont}{\normalfont\bfseries\vspace{0.5\baselineskip}} % Set the "Abstract" text to bold
 \renewcommand{\abstracttextfont}{\vspace{-0.5\baselineskip}\normalfont\small\itshape} % Set the abstract itself to small italic text

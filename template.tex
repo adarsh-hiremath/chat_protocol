@@ -9,7 +9,7 @@
 
 % A shortened article title to appear in the running head, leave this command empty for no running head
 
-\footertext{\textit{Journal of Biological Sampling} (2024) 12:533-684} % Text to appear in the footer, leave this command empty for no footer text
+% \footertext{\textit{Journal of Biological Sampling} (2024) 12:533-684} % Text to appear in the footer, leave this command empty for no footer text
 
 \setcounter{page}{1} % The page number of the first page, set this to a higher number if the article is to be part of an issue or larger work
 
@@ -66,17 +66,58 @@ Andrew and I decided to process information sent by the client on the server sid
 
 \section{Wire Protocol}
 
-Here, we will specify the functionalities supported by our wire protocol as well as provide further explanation about how our protocol was implemented. Our wire protocol utilizes a delimeter system to distinguish between different requests from the user. Our delimeter is '|', so any requests made to the server must include the appropriate command followed by the delimeter followed by any relevant parameters. For example, sending a message to another user would look something like: 's|<recipientUUID>|<message>.' Below, we've included a complete list of the arguments accepted by our wire protocol. 
+Here, we will specify the functionalities supported by our wire protocol as well as provide further explanation about how our protocol was implemented. Our wire protocol utilizes a delimeter system to distinguish between different requests from the user. Our delimeter is '|', so any requests made to the server must include the appropriate command followed by the delimeter followed by any relevant parameters. For example, sending a message to another user would look something like: 's|<recipientUsername>|<message>.' Below, we've included a complete list of the arguments accepted by our wire protocol. 
 \begin{itemize}
     \item Create an account. Usage: c|<username>
     \item Log into an account. Usage: l|<username>
-    \item Send a message to a user. Usage: s|<recipient_username>|<message>
+    \item Send message. \\
+    Usage: s|<recipientUsername>|<message>
     \item List all users. Usage: u
-    \item Filter accounts. Usage: f|<filter_regex>
-    \item Delete your account. Usage: d|<confirm_username>
+    \item Filter accounts. Usage: f|<filterRegex>
+    \item Delete account. Usage: d|<confirmUsername>
 \end{itemize}
 
-% \section{Code Reproducibility}
+Commands like logging out, listing all users, and deleting an account become easier to implement with a delimeter system. Without a delimeter system, a client sending "d," for example, would be ambiguous for the server because there is no way to distinguish between sending the character "d" to another client or deleting an account. A delimeter system solves this because the client can still send the character "d" to a user as long as they specify their desired operation is a message send. 
 
-% \section{Original Wire Protocol vs. gRPC}
+We use Python's We use Lib/struct.py to encode and decode messages efficiently using UTF-8. The two encoding and decoding schemes we considered were ASCII and UTF-8. At first, we considered implementing our encode / decode system using ASCII, since the size of any individual ASCII character is exactly one byte. This would make implementing character limits relatively easy to implement, since our argument to $connection.recv()$ would be the maximum number of characters we want a user to be able to send using our chat application. However, since ASCII only supports A-Z, 0-9, and dashes, we decided to use a UTF-8 encoding system to allow users to use punctuation when necessary. We decided on a limit of 4096 bytes, which allows for approximately 1000 characters to be sent over our socket in the worst case scenario. 
+
+After receiving our bytes over the web socket and decoding, we do a simple 
+$split('|')$ operation to distinguish between the delimeter and arguments sent by the client. We decided to deal with white space using a simple $strip()$ operation on every element in the split version of the client's command. This way, any spaces before or after the delimeter would be irrelevant and the client can still make commands as long as they follow the outline described above. 
+
+To keep our wire protocol simple and minimize code repetition, we decided to abstract away the implementations using helper functions for each operation. For example, this is how our code is structured for creating an account, logging in, and listing users. The code for the other operations follows a similar structure. Each operation code corresponds to a different helper function and each helper function behaves differently depending on the specification of the operation.
+
+\begin{python}
+    if op_code == 'c': 
+        msg = create_account(msg_list[1], 
+        connection)
+    elif op_code == 'l':
+        msg = login(msg_list[1], connection)
+    elif op_code == 'u':
+        msg = list_accounts()
+\end{python}
+
+Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is an example of our implementation for our function that sends messages. 
+
+\begin{python}
+    def send_msg(uuid, msg):
+    print(f"connection: {live_users[uuid]}")
+    live_users[uuid].send
+    (msg.encode('UTF-8'))
+    return f"\nMessage sent to {uuid}.\n"
+\end{python}
+
+\section{Account Handling}
+
+To implement our account handling schema, we debated between using a database or simple Python dictionaries and lists. After consulting Professor Waldo, we decided to use a simple dictionary and list implementation since we assumed that there would be no Byzantine failures causing the server to unexpectedly shut down. 
+
+We have three main data structures that we use throughout our chat application. 
+\begin{itemize}
+    \item $pending\_messages$: a dictionary with UUIDs as keys and pending messages as values. 
+    \item $accounts$: a dictionary with UUIDs as keys and account names as values that we call 
+    \item $live\_users$: a dictionary with UUIDs as keys and connection references as values. 
+\end{itemize}
+
+We decided to use a single dictionary for pending messages to handle the scenario where a user is offline. Storing all messages sent and received in a dictionary would be a waste of space because our server only cares if the user has seen the message intended for them. When a user goes online, our program checks whether there are any pending messages to be sent to them and sends messages accordingly. We have a single dictionary for accounts and their corresponding names in order to implement the listing users portion of the assignment. Finally, our live users dictionary stores all the users that are currently logged in so that the server can check if a user is logged in before sending a message to them. We also store the references to the socket connection in order for the server to send messages over the right connection.
+
+\section{Original Wire Protocol vs. gRPC}
 \end{document}

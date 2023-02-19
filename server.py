@@ -91,7 +91,7 @@ def wire_protocol(connection):
             msg = login(msg_list[1], connection)
 
         # List all users and their names. 
-        # Usage: u
+        # Usage: uF
         elif op_code == 'u':
             msg = list_accounts()
 
