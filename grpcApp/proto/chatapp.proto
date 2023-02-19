@@ -4,20 +4,20 @@ package chatapp;
 
 // The greeting service definition.
 service ChatApp {
-  rpc createAccount (AccountName) returns (AccountID) {};
-  rpc logIn (AccountID) returns (ServerReply) {};
+  rpc createAccount (AccountName) returns (Account) {};
+  rpc logIn (AccountID) returns (LoginReply) {};
   rpc listAccounts (Empty) returns (ServerReply) {};
   rpc filterAccounts (FilterString) returns (ServerReply) {};
   rpc logOut (AccountID) returns (ServerReply) {};
-  rpc sendMessage (Chat) returns (ServerReply) {};
-  rpc listenForMessages (Empty) returns (stream Chat) {};
+  rpc sendMessage (Message) returns (ServerReply) {};
+  rpc listenForMessages (AccountID) returns (stream Message) {};
+  rpc listenForReplies (Empty) returns (stream ServerReply) {};
 }
 
 // All information used in storing an account.
 message Account {
   int32 id = 1;
   string name = 2;
-  bool active = 3;
 }
 
 // Account name.
@@ -40,9 +40,11 @@ message ServerReply {
 message Empty {}
 
 // Message format.
-message Chat {
-  string name = 1;
-  string message = 2;
+message Message {
+  int32 senderID = 1;
+  string senderName = 2;
+  string message = 3;
+  int32 recipientID = 4;
 }
 
 // String to filter by.
@@ -50,4 +52,8 @@ message FilterString {
   string filter = 1;
 }
 
-
+message LoginReply {
+  bool success = 1;
+  string message = 2;
+  string username = 3;
+}

@@ -1,11 +1,11 @@
 # Fdb version 3
-["biber template"] 1676770695 "template.bcf" "template.bbl" "template" 1676770771
-  "template.bcf" 1676770771 105726 33fa751487717f0739913cf29091b51d "pdflatex"
+["biber template"] 1676770695 "template.bcf" "template.bbl" "template" 1676773812
+  "template.bcf" 1676773811 105726 33fa751487717f0739913cf29091b51d "pdflatex"
   (generated)
   "template.bbl"
   "template.blg"
-["pdflatex"] 1676770770 "/Users/ahiremath/Desktop/chat_protocol/template.tex" "template.pdf" "template" 1676770771
-  "/Users/ahiremath/Desktop/chat_protocol/template.tex" 1676770770 5074 eb10de5e4947b9d89cf948edccf4ce5d ""
+["pdflatex"] 1676773810 "/Users/andrew/Code/CS/cs262/exercise1/template.tex" "template.pdf" "template" 1676773812
+  "/Users/andrew/Code/CS/cs262/exercise1/template.tex" 1676773810 5074 eb10de5e4947b9d89cf948edccf4ce5d ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/palatino/pplb8r.tfm" 1136768653 2532 9ad73cf4dd2173a847f2a5f5608e0b9a ""
@@ -119,14 +119,14 @@
   "/usr/local/texlive/2022/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf" 1646502317 40171 cdab547de63d26590bebb3baff566530 ""
   "/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1647878959 4410336 7d30a02e9fa9a16d7d1f8d037ba69641 ""
-  "/usr/local/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt" 1674702701 2826448 ffad6bfdc32fed068edf59b7ea9a9417 ""
+  "/usr/local/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt" 1661297187 2826443 357bbba1d39a8bd4766f91d7fed1fc9b ""
   "/usr/local/texlive/2022/texmf.cnf" 1647878952 577 209b46be99c9075fd74d4c0369380e8c ""
-  "LTJournalArticle.cls" 1676770512 9784 e38e4f05326438c9cfb0a6c6bf9f0764 ""
-  "template.aux" 1676770771 951 4087d6cf21deda43d5cff1d156c5b4d4 "pdflatex"
-  "template.bbl" 1676770696 466 ee04f40f768daeed26442158e95aba61 "biber template"
-  "template.out" 1676770771 104 112c15e46550b64848bce7386adda73f "pdflatex"
-  "template.run.xml" 1676770771 2329 dd0b28ad5248dccc56c9d3651d0f9aad "pdflatex"
-  "template.tex" 1676770770 5074 eb10de5e4947b9d89cf948edccf4ce5d ""
+  "LTJournalArticle.cls" 1676773731 9784 e38e4f05326438c9cfb0a6c6bf9f0764 ""
+  "template.aux" 1676773811 951 4087d6cf21deda43d5cff1d156c5b4d4 "pdflatex"
+  "template.bbl" 1676773731 466 ee04f40f768daeed26442158e95aba61 "biber template"
+  "template.out" 1676773811 104 112c15e46550b64848bce7386adda73f "pdflatex"
+  "template.run.xml" 1676773811 2329 dd0b28ad5248dccc56c9d3651d0f9aad "pdflatex"
+  "template.tex" 1676773810 5074 eb10de5e4947b9d89cf948edccf4ce5d ""
   (generated)
   "template.aux"
   "template.bcf"

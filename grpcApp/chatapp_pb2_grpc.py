@@ -18,12 +18,12 @@ class ChatAppStub(object):
         self.createAccount = channel.unary_unary(
                 '/chatapp.ChatApp/createAccount',
                 request_serializer=chatapp__pb2.AccountName.SerializeToString,
-                response_deserializer=chatapp__pb2.AccountID.FromString,
+                response_deserializer=chatapp__pb2.Account.FromString,
                 )
         self.logIn = channel.unary_unary(
                 '/chatapp.ChatApp/logIn',
                 request_serializer=chatapp__pb2.AccountID.SerializeToString,
-                response_deserializer=chatapp__pb2.ServerReply.FromString,
+                response_deserializer=chatapp__pb2.LoginReply.FromString,
                 )
         self.listAccounts = channel.unary_unary(
                 '/chatapp.ChatApp/listAccounts',
@@ -42,13 +42,18 @@ class ChatAppStub(object):
                 )
         self.sendMessage = channel.unary_unary(
                 '/chatapp.ChatApp/sendMessage',
-                request_serializer=chatapp__pb2.Chat.SerializeToString,
+                request_serializer=chatapp__pb2.Message.SerializeToString,
                 response_deserializer=chatapp__pb2.ServerReply.FromString,
                 )
         self.listenForMessages = channel.unary_stream(
                 '/chatapp.ChatApp/listenForMessages',
+                request_serializer=chatapp__pb2.AccountID.SerializeToString,
+                response_deserializer=chatapp__pb2.Message.FromString,
+                )
+        self.listenForReplies = channel.unary_stream(
+                '/chatapp.ChatApp/listenForReplies',
                 request_serializer=chatapp__pb2.Empty.SerializeToString,
-                response_deserializer=chatapp__pb2.Chat.FromString,
+                response_deserializer=chatapp__pb2.ServerReply.FromString,
                 )
 
 
@@ -98,18 +103,24 @@ class ChatAppServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def listenForReplies(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ChatAppServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'createAccount': grpc.unary_unary_rpc_method_handler(
                     servicer.createAccount,
                     request_deserializer=chatapp__pb2.AccountName.FromString,
-                    response_serializer=chatapp__pb2.AccountID.SerializeToString,
+                    response_serializer=chatapp__pb2.Account.SerializeToString,
             ),
             'logIn': grpc.unary_unary_rpc_method_handler(
                     servicer.logIn,
                     request_deserializer=chatapp__pb2.AccountID.FromString,
-                    response_serializer=chatapp__pb2.ServerReply.SerializeToString,
+                    response_serializer=chatapp__pb2.LoginReply.SerializeToString,
             ),
             'listAccounts': grpc.unary_unary_rpc_method_handler(
                     servicer.listAccounts,
@@ -128,13 +139,18 @@ def add_ChatAppServicer_to_server(servicer, server):
             ),
             'sendMessage': grpc.unary_unary_rpc_method_handler(
                     servicer.sendMessage,
-                    request_deserializer=chatapp__pb2.Chat.FromString,
+                    request_deserializer=chatapp__pb2.Message.FromString,
                     response_serializer=chatapp__pb2.ServerReply.SerializeToString,
             ),
             'listenForMessages': grpc.unary_stream_rpc_method_handler(
                     servicer.listenForMessages,
+                    request_deserializer=chatapp__pb2.AccountID.FromString,
+                    response_serializer=chatapp__pb2.Message.SerializeToString,
+            ),
+            'listenForReplies': grpc.unary_stream_rpc_method_handler(
+                    servicer.listenForReplies,
                     request_deserializer=chatapp__pb2.Empty.FromString,
-                    response_serializer=chatapp__pb2.Chat.SerializeToString,
+                    response_serializer=chatapp__pb2.ServerReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -160,7 +176,7 @@ class ChatApp(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatapp.ChatApp/createAccount',
             chatapp__pb2.AccountName.SerializeToString,
-            chatapp__pb2.AccountID.FromString,
+            chatapp__pb2.Account.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -177,7 +193,7 @@ class ChatApp(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatapp.ChatApp/logIn',
             chatapp__pb2.AccountID.SerializeToString,
-            chatapp__pb2.ServerReply.FromString,
+            chatapp__pb2.LoginReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -244,7 +260,7 @@ class ChatApp(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/chatapp.ChatApp/sendMessage',
-            chatapp__pb2.Chat.SerializeToString,
+            chatapp__pb2.Message.SerializeToString,
             chatapp__pb2.ServerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -261,7 +277,24 @@ class ChatApp(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/chatapp.ChatApp/listenForMessages',
+            chatapp__pb2.AccountID.SerializeToString,
+            chatapp__pb2.Message.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def listenForReplies(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/chatapp.ChatApp/listenForReplies',
             chatapp__pb2.Empty.SerializeToString,
-            chatapp__pb2.Chat.FromString,
+            chatapp__pb2.ServerReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
