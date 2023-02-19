@@ -68,7 +68,12 @@ Andrew and I decided to process information sent by the client on the server sid
 
 Here, we will specify the functionalities supported by our wire protocol as well as provide further explanation about how our protocol was implemented. Our wire protocol utilizes a delimeter system to distinguish between different requests from the user. Our delimeter is '|', so any requests made to the server must include the appropriate command followed by the delimeter followed by any relevant parameters. For example, sending a message to another user would look something like: 's|<recipientUUID>|<message>.' Below, we've included a complete list of the arguments accepted by our wire protocol. 
 \begin{itemize}
-    \item 
+    \item Create an account. Usage: c|<username>
+    \item Log into an account. Usage: l|<username>
+    \item Send a message to a user. Usage: s|<recipient_username>|<message>
+    \item List all users. Usage: u
+    \item Filter accounts. Usage: f|<filter_regex>
+    \item Delete your account. Usage: d|<confirm_username>
 \end{itemize}
 
 % \section{Code Reproducibility}

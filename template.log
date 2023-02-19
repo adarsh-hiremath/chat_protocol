@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.1.25)  19 FEB 2023 13:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2023.1.25)  19 FEB 2023 13:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -646,7 +646,6 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 31.
 LaTeX Info: Redefining \pageref on input line 31.
 LaTeX Info: Redefining \nameref on input line 31.
- (./template.out) (./template.out)
 \@outlinefile=\write4
 \openout4 = `template.out'.
 
@@ -661,14 +660,15 @@ Package biblatex Info: Automatic encoding selection.
 \openout3 = `template.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'template.bbl' found.
- (./template.bbl)
+Package biblatex Info: ... file 'template.bbl' not found.
+
+No file template.bbl.
 Package biblatex Info: Reference section=0 on input line 31.
 Package biblatex Info: Reference segment=0 on input line 31.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Trying to load font information for OT1+pplx on input line 34.
- (/usr/local/texlive/2022/texmf-dist/tex/latex/psnfss/ot1pplx.fd
+(/usr/local/texlive/2022/texmf-dist/tex/latex/psnfss/ot1pplx.fd
 File: ot1pplx.fd 2004/09/06 font definitions for OT1/pplx.
 )
 LaTeX Font Info:    Trying to load font information for OML+zplm on input line 34.
@@ -697,28 +697,235 @@ File: ts1pplx.fd 2004/09/06 font definitions for TS1/pplx.
 ) [1{/usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
-] [2
+]
+/Users/ahiremath/Desktop/chat_protocol/template.tex:73: Missing $ inserted.
+<inserted text> 
+                $
+l.73 ... a message to a user. Usage: s|<recipient_
+                                                  username>|<message>
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:74: LaTeX Error: Command \item invalid in math mode.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.74     \item
+               List all users. Usage: u
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:74: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.74     \item L
+                ist all users. Usage: u
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:74: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.74     \item L
+                ist all users. Usage: u
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:75: LaTeX Error: Command \item invalid in math mode.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.75     \item
+               Filter accounts. Usage: f|<filter_regex>
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:75: Missing $ inserted.
+<inserted text> 
+                $
+l.75     \item F
+                ilter accounts. Usage: f|<filter_regex>
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:75: Missing } inserted.
+<inserted text> 
+                }
+l.75     \item F
+                ilter accounts. Usage: f|<filter_regex>
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 73--75
+[]\T1/pplx/m/n/10 (+20) Send a mes-sage to a user. Us-age:
+ []
+
+
+Underfull \hbox (badness 2111) in paragraph at lines 73--75
+\T1/pplx/m/n/10 (+20) s|<recipient$[]\OML/zplm/m/it/10 sername > \OMS/zplm/m/n/10 j \OML/zplm/m/it/10 < message >
+ []
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:75: Extra }, or forgotten \endgroup.
+\par ...m \@noitemerr {\@@par }\fi \else {\@@par }
+                                                  \fi 
+l.75     \item F
+                ilter accounts. Usage: f|<filter_regex>
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:75: Missing $ inserted.
+<inserted text> 
+                $
+l.75     \item Filter accounts. Usage: f|<filter_
+                                                 regex>
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:76: LaTeX Error: Command \item invalid in math mode.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.76     \item
+               Delete your account. Usage: d|<confirm_username>
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:76: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.76     \item D
+                elete your account. Usage: d|<confirm_username>
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:76: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.76     \item D
+                elete your account. Usage: d|<confirm_username>
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:77: LaTeX Error: Command \end{itemize} invalid in math mode.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.77 \end{itemize}
+                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:77: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.77 \end{itemize}
+                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:77: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.77 \end{itemize}
+                  
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+/Users/ahiremath/Desktop/chat_protocol/template.tex:77: Missing $ inserted.
+<inserted text> 
+                $
+l.77 \end{itemize}
+                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+
+Underfull \hbox (badness 6792) in paragraph at lines 75--78
+[]\T1/pplx/m/n/10 (+20) Filter ac-counts. Us-age: f|<filter$[]\OML/zplm/m/it/10 egex >
+ []
+
+[2
 
 ] (./template.aux)
-Package rerunfilecheck Info: File `template.out' has not changed.
-(rerunfilecheck)             Checksum: 88D1F0CD818B8C1B4EFFDC785D9FFC21;498.
+
+LaTeX Warning: There were undefined references.
+
+
+Package rerunfilecheck Warning: File `template.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `template.out':
+(rerunfilecheck)             Before: <no file>
+(rerunfilecheck)             After:  88D1F0CD818B8C1B4EFFDC785D9FFC21;498.
+
+Package biblatex Warning: Please (re)run Biber on the file:
+(biblatex)                template
+(biblatex)                and rerun LaTeX afterwards.
+
 Package logreq Info: Writing requests to 'template.run.xml'.
 \openout1 = `template.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 20798 strings out of 478268
- 367245 string characters out of 5846347
- 1115985 words of memory out of 5000000
- 38555 multiletter control sequences out of 15000+600000
- 509123 words of font info for 192 fonts, out of 8000000 for 9000
+ 20838 strings out of 478268
+ 367871 string characters out of 5846347
+ 1115838 words of memory out of 5000000
+ 38580 multiletter control sequences out of 15000+600000
+ 519567 words of font info for 222 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,11n,82p,1044b,801s stack positions out of 10000i,1000n,20000p,200000b,200000s
-{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2022/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on template.pdf (2 pages, 55598 bytes).
+{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on template.pdf (2 pages, 73935 bytes).
 PDF statistics:
- 54 PDF objects out of 1000 (max. 8388607)
- 43 compressed objects within 1 object stream
+ 51 PDF objects out of 1000 (max. 8388607)
+ 36 compressed objects within 1 object stream
  7 named destinations out of 1000 (max. 500000)
- 63009 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 70657 words of extra memory for PDF output out of 74296 (max. 10000000)
 

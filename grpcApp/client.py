@@ -143,7 +143,7 @@ class Client:
                 sys.exit(0)
 
             # List all users and their names. 
-            # Usage: u
+            # Usage: d|<confirm_username>
             elif op_code == 'u':
                 if len(msg_list) != 1:
                     print(invalid_args_msg)
