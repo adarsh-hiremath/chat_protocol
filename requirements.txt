@@ -1,0 +1,11 @@
+# requirements ofr the project
+# pip install -r requirements.txt
+
+pip>=9.0.1
+grpcio>=1.40.0
+grpcio-tools>=1.40.0
+protobuf>=3.12.3
+threading
+time
+sys
+termcolor

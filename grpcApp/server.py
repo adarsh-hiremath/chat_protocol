@@ -2,6 +2,7 @@ from concurrent import futures
 import logging, grpc, time, random
 import chatapp_pb2 as app
 import chatapp_pb2_grpc as rpc
+from termcolor import colored
 
 ip = "127.0.0.1"
 port = 50051
@@ -34,21 +35,24 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
     def logIn(self, request: app.AccountID, context):
         """Missing associated documentation comment in .proto file."""
         if request.id in self.live_users:
-            msg = f"User {request.id} already logged in, please try again.\n"
+            msg = f"\nUser {request.id} already logged in, please try again.\n"
+            msg = colored(msg, "red")
             return app.LoginReply(success=False, message=msg)
         elif not self.accounts.get(request.id):
-            msg = f"User {request.id} is not a valid user, please try again.\n"
+            msg = f"\nUser {request.id} is not a valid user, please try again.\n"
+            msg = colored(msg, "red")
             return app.LoginReply(success=False, message=msg)
         else: 
             self.live_users.append(request.id)
-            msg = f"User {request.id} successfully logged in!\n"
+            msg = f"\nUser {request.id} logged in - welcome back {self.accounts[request.id]}!\n"
+            msg = colored(msg, "green")
             return app.LoginReply(success=True, message=msg, username=self.accounts[request.id])
 
     def listAccounts(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        str = "\n" + "\n".join([f"{self.accounts[id]} ({id})" for id in self.accounts]) + "\n"
+        str = colored(str, "blue")
+        return app.ServerReply(message=str)
 
     def filterAccounts(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -58,9 +62,12 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
     def logOut(self, request, context):
         """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        if request.id in self.live_users: 
+            self.live_users.remove(request.id)
+            msg = colored(f"\nUser {request.id} logged out!\n", "green")
+        else:
+            msg = colored(f"\nUser {request.id} not found!\n", "red")
+        return app.ServerReply(message=msg)
 
     def sendMessage(self, request: app.Message, context):
         """Missing associated documentation comment in .proto file."""
@@ -72,9 +79,11 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
                 self.messages[request.recipientID].append(request)
             else:
                 self.messages[request.recipientID] = [request]
-            return app.ServerReply(message="Message successfully sent!\n")  
+            msg = ""
         else:
-            return app.ServerReply(message="Message failed to send!\n")
+            msg = colored("Message failed to send! Verify recipient ID.", "red")
+        
+        return app.ServerReply(message=msg)
 
     def listenForMessages(self, request_iterator, context):
         """This is a stream that continuously sends chats."""
@@ -105,11 +114,11 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=25))
     rpc.add_ChatAppServicer_to_server(ChatApp(), server)
     server.add_insecure_port(ip + ':' + str(port))
     server.start()
-    print(f"Server started, listening on {port}")
+    print(f"Server started, listening on port {port}.")
     server.wait_for_termination()
 
 
