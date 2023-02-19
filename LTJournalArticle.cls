@@ -75,6 +75,7 @@
 %----------------------------------------------------------------------------------------
 
 \usepackage{fancyhdr} % Required for customizing headers and footers
+\usepackage{indentfirst}
 \pagestyle{fancy} % Enable custom headers and footers
 
 \renewcommand{\headrulewidth}{0pt} % Top horizontal rule thickness
@@ -139,6 +140,15 @@
 %----------------------------------------------------------------------------------------
 
 \usepackage{titling} % Required for customizing the title section
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
 
 \setlength{\droptitle}{-4\baselineskip} % Move the title up
 
