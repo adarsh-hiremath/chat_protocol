@@ -108,6 +108,7 @@ def send_msg(recipientName, msg):
 
     if recipientName in accounts: 
         if recipientName in live_users:
+            msg += "\n"
             live_users[recipientName].send(msg.encode('UTF-8'))
             print(f"\nMessage sent to {recipientName}.\n")
             msg = colored(f"\nMessage sent to {recipientName}.\n", "green")
@@ -181,7 +182,7 @@ def wire_protocol(connection):
         # Send a message to a user. 
         # Usage: s|<recipient_username>|<message>
         elif op_code == 's':
-            if len(msg_list) != 2: 
+            if len(msg_list) != 3: 
                 msg = (colored("\nInvalid arguments! Usage:   s|<recipient_username>|<message>\n", "red"))
             else: 
                 msg = send_msg(msg_list[1], msg_list[2])
