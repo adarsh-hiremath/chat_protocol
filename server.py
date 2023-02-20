@@ -7,14 +7,21 @@ from termcolor import colored
 # A dictionary with username as key and pending messages as values. 
 pending_messages = {}
 
-# A dictionary with UUIDs as keys and account names as values. 
+# A dictionary with usernames as keys and account names as values. 
 accounts = []
 
-# A dictionary with UUIDs as keys and connection references as values.
+# A dictionary with usernames as keys and connection references as values.
 live_users = {}
 
 # Create a new account with a given name and associate the account with the appropriate socket. 
-def create_account(username, connection): 
+def create_account(msg_list, connection): 
+    if len(msg_list) != 2: 
+        msg = (colored("\nInvalid arguments! Usage:   c|<username>\n", "red"))
+        connection.send(msg.encode('UTF-8'))
+        return 
+
+    username = msg_list[1]
+
     if username in accounts: 
         print(f"\nUser {username} account creation rejected\n")
         msg = colored(f"\nAccount {username} already exists!\n", "red")
@@ -31,7 +38,14 @@ def create_account(username, connection):
     return msg
 
 # Delete the account from the list of accounts. 
-def delete_account(username): 
+def delete_account(msg_list): 
+    if len(msg_list) != 2: 
+        msg = (colored("\nInvalid arguments! Usage:   d|<confirm_account>\n", "red"))
+        return msg
+
+    username = msg_list[1]
+
+    username = msg_list[1]
     print(f"\nUser {username} requesting account deletion.\n")
 
     if username in accounts: 
@@ -42,7 +56,7 @@ def delete_account(username):
         msg = colored(f"\nAccount {username} has been deleted.\n", "green")
         return msg
 
-# Iterate through the accounts and generate a string with all the UUIDs and account names.
+# Displays all account names and their status (live or not). 
 def list_accounts(): 
     print(f'\nListing accounts\n')
 
@@ -57,8 +71,15 @@ def list_accounts():
     return acc_str
 
 # Check that the user is not already logged in, log in to a particular user, and deliver unreceived messages if applicable.
-def login(username, connection): 
+def login(msg_list, connection): 
     print(f"\nLogin as user {username} requested\n")
+
+    if len(msg_list) != 2: 
+        msg = (colored("\nInvalid arguments! Usage:   l|<username>\n", "red"))
+        return msg
+    
+    username = msg_list[1]
+
     if username in live_users: 
         print(f"\Login as {username} denied.\n")
         msg = colored(f"\nUser {username} already logged in. Please try again.\n", "red")
@@ -81,7 +102,7 @@ def login(username, connection):
                 pending_messages[username].pop(0)
         return msg
 
-# Send a message to the given UUID.
+# Send a message to the given user.
 def send_msg(recipientName, msg):
     print(f"\nRequest received to send message to {recipientName}.\n")
 
@@ -104,9 +125,15 @@ def send_msg(recipientName, msg):
         print(f"\nRequest to send message to {recipientName} denied.\n")
         return msg
 
-# Iterate through the accounts and generate a string with all the UUIDs and account names.
-def filter_accounts(request): 
+# Filter accounts by a given regex.
+def filter_accounts(msg_list): 
     print(f'\nFiltering accounts.\n')
+
+    if len(msg_list) != 2: 
+        msg = (colored("\nInvalid arguments! Usage:   f|<filter_regex>\n", "red"))
+        return msg
+    
+    request = msg_list[1]
 
     # Find a list of matching accounts.
     fltr = request.filter
@@ -129,7 +156,7 @@ def filter_accounts(request):
 def wire_protocol(connection):
     # Main server thread that continues running until the connection is closed.
     while True:
-        # Preprocess the message by decoding it and splitting it by delimeter. 
+        # Preprocess the message by decoding it and splitting it by delimeter.
         msg = connection.recv(4096)
         msg_str = msg.decode('UTF-8')
         msg_list = msg_str.split('|')
@@ -137,45 +164,55 @@ def wire_protocol(connection):
         op_code = msg_list[0].strip()
 
         # Create an account.
-        # Usage: c
+        # Usage: c|<username>
         if op_code == 'c':
-            msg = create_account(msg_list[1], connection)
+            msg = create_account(msg_list, connection)
         
         # Log into an account.
-        # Usage: l|<uuid>
+        # Usage: l|<username>
         elif op_code == 'l':
-            msg = login(msg_list[1], connection)
+            msg = login(msg_list, connection)
 
         # List all users and their names. 
-        # Usage: uF
+        # Usage: u
         elif op_code == 'u':
             msg = list_accounts()
 
         # Send a message to a user. 
-        # Usage: s|<recipient_uuid>|<message>
+        # Usage: s|<recipient_username>|<message>
         elif op_code == 's':
-            msg = send_msg(msg_list[1], msg_list[2])
+            if len(msg_list) != 2: 
+                msg = (colored("\nInvalid arguments! Usage:   s|<recipient_username>|<message>\n", "red"))
+            else: 
+                msg = send_msg(msg_list[1], msg_list[2])
 
         # Delete an account
         # Usage: d|<confirm_username>
         elif op_code == 'd':
-            msg = delete_account(msg_list[1])
+            msg = delete_account(msg_list)
     
         # Filter accounts using a certain wildcard.
-        # Usage: f|<filter_wildcard>
+        # Usage: f|<filter_regex>
         elif op_code == 'f':
-            msg = filter_accounts(msg_list[1])
+            msg = filter_accounts(msg_list)
+        
+        elif op_code == 'h':
+            msg = "\nUsage help below:\n"
+            msg += "\nCreate an account.        c|<username>"
+            msg += "\nLog into an account.      l|<username>"
+            msg += "\nSend a message.           s|<recipient_username>|<message>"
+            msg += "\nFilter accounts.          f|<filter_regex>"
+            msg += "\nDelete your account.      d|<confirm_username>"
+            msg += "\nList users and names.     u"
+            msg += "\nUsage help (this page).   h\n"
+            msg = colored(msg, 'red')
 
         # Handles an invalid request and lists the correct usage for the user. 
         else:
-            msg = "\nInvalid request, see below for usage help:"
-            msg += "\nCreate an account, usage: c|<username>"
-            msg += "\nLog into an account, usage: l|<uuid>"
-            msg += "\nList users and their names, usage: u"
-            msg += "\nSend a message, usage: s|<recipient_uuid>|<message>"
-            msg += "\nDelete an account, usage: d|<uuid_to_delete>"
+            msg = "\nInvalid request, use \"h\" for usage help!\n"
+            msg = colored(msg, 'red')
 
-        # send encoded acknowledgment to the connected client
+        # Send encoded acknowledgment to the connected client
         connection.send(msg.encode('UTF-8')) 
 
 

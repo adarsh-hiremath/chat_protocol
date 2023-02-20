@@ -1,7 +1,7 @@
 import socket
 import sys
 import select
-
+from termcolor import colored
 
 def Main():
     # Set IP address and local port.

@@ -7,7 +7,6 @@ ip = "127.0.0.1"
 port = 50051
 
 class Client:
-
     def __init__(self):
 
         # Set initial client variables
@@ -43,7 +42,7 @@ class Client:
 
             # Get input from user, then preprocess it.
             msg1 = colored(f"", "grey")
-            msg2 = colored("Create an account or log in: \n", "grey", attrs=["bold"])
+            msg2 = colored("\nCreate an account or log in: \n", "grey", attrs=["bold"])
             msg_str = input(msg1 if self.loggedIn else msg2)
             msg_list = msg_str.split('|')
             msg_list = [elt.strip() for elt in msg_list]
@@ -123,7 +122,7 @@ class Client:
             elif op_code == 'd':
                 if len(msg_list) != 2:
                     print(invalid_args_msg)
-                    print(colored("Usage:   d\n", "red"))
+                    print(colored("Usage:   d|<confirm_username>\n", "red"))
                     continue
                 
                 # Ensure user is logged in and uses correct confirmation.
@@ -163,7 +162,6 @@ class Client:
                 msg += "\nFilter accounts.          f|<filter_regex>"
                 msg += "\nDelete your account.      d|<confirm_username>"
                 msg += "\nList users and names.     u"
-                # msg += "\nLog out of your account.  q"
                 msg += "\nUsage help (this page).   h\n"
                 msg = colored(msg, 'red')
                 print(msg)  
