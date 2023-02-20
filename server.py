@@ -2,71 +2,127 @@ import socket
 import random
 from _thread import *
 import re
+from termcolor import colored
 
-# A dictionary with UUIDs as keys and pending messages as values. 
+# A dictionary with username as key and pending messages as values. 
 pending_messages = {}
 
 # A dictionary with UUIDs as keys and account names as values. 
-accounts = {}
+accounts = []
 
 # A dictionary with UUIDs as keys and connection references as values.
 live_users = {}
 
 # Create a new account with a given name and associate the account with the appropriate socket. 
-def create_account(name, connection): 
-    uuid = str(random.randint(0, 1000))
-    while uuid in accounts:
-        uuid  = str(random.randint(0,1000))
-    accounts[uuid] = name
-    return f"\nNew account created! User ID: {uuid}. Please log in. \n"
+def create_account(username, connection): 
+    if username in accounts: 
+        print(f"\nUser {username} account creation rejected\n")
+        msg = colored(f"\nAccount {username} already exists!\n", "red")
+        return msg
+    
+    if not re.fullmatch("\w{2,20}", username):
+        print(f"User {username} account creation rejected")
+        msg = colored(f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
+        return msg
+    
+    accounts.append(username)
+    print(f"\nUser {username} account created")
+    msg = f"\nNew account created! User ID: {username}. Please log in.\n"
+    return msg
 
 # Delete the account from the list of accounts. 
-def delete_account(uuid): 
-    accounts.pop(uuid, None)
-    pending_messages.pop(uuid, None)
-    live_users.pop(uuid, None)
-    return f"\nAccount with User ID {uuid} has been deleted\n"
+def delete_account(username): 
+    print(f"\nUser {username} requesting account deletion.\n")
 
-# Disconnect a specific user from the server. 
-def disconnect_user(uuid):
-    live_users.pop(uuid, None)
-    return f"\nAccount with User ID {uuid} has disconnected\n"
+    if username in accounts: 
+        accounts.remove(username)
+        if pending_messages.get(username):
+            pending_messages.pop(username)
+        print(f"\nUser {username} account deleted.\n")
+        msg = colored(f"\nAccount {username} has been deleted.\n", "green")
+        return msg
 
 # Iterate through the accounts and generate a string with all the UUIDs and account names.
 def list_accounts(): 
-    acc_str = "\n Active Accounts:\n"
-    for acc in accounts: 
-        next_acc = "\n" + accounts[acc] + " (UUID: " + acc + ")" + "\n"
-        acc_str += next_acc
+    print(f'\nListing accounts\n')
+
+    if len(list(accounts)) < 0: 
+        acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
+                    (colored("(live)", "green") if u in live_users else ""))
+                    for u in accounts]) + "\n"
+    
+    else: 
+        acc_str = colored("\nNo existing users!\n", "red")
+
     return acc_str
 
 # Check that the user is not already logged in, log in to a particular user, and deliver unreceived messages if applicable.
-def login(uuid, connection): 
-    if uuid in live_users:
-        print(f"User {uuid} has already logged in\n")
-        return f"\nUser {uuid} already logged in, please try again.\n"
+def login(username, connection): 
+    print(f"\nLogin as user {username} requested\n")
+    if username in live_users: 
+        print(f"\Login as {username} denied.\n")
+        msg = colored(f"\nUser {username} already logged in. Please try again.\n", "red")
+        return msg
+    
+    elif username not in accounts: 
+        print(f"\nLogin as {username} denied.\n")
+        msg = colored(f"\nUser {username} does not exist. Please create an account.\n", "red") 
+        return msg
+    
     else: 
-        live_users[uuid] = connection
-        while pending_messages.get(uuid):
-            send_msg(uuid, pending_messages[uuid][0])
-            pending_messages[uuid].pop(0)
-        return f"\nLogged in as user {uuid}!\n"
+        live_users[username] = connection
+        print (f"\nLogin as user {username} completed.\n")
+        msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
+        if len(pending_messages.get(username)) > 0: 
+            print(f"\nDelivering pending messages to {username}.\n")
+            send_msg(username, f"\nYou have pending messages! Delivering the  messages now.\n")
+            while pending_messages.get(username):
+                send_msg(username, pending_messages[username][0])
+                pending_messages[username].pop(0)
+        return msg
 
 # Send a message to the given UUID.
-def send_msg(uuid, msg):
-    print(f"connection: {live_users[uuid]}")
-    live_users[uuid].send(msg.encode('UTF-8'))
-    return f"\nMessage sent to {uuid}.\n"
+def send_msg(recipientName, msg):
+    print(f"\nRequest received to send message to {recipientName}.\n")
+
+    if recipientName in accounts: 
+        if recipientName in live_users:
+            live_users[recipientName].send(msg.encode('UTF-8'))
+            print(f"\nMessage sent to {recipientName}.\n")
+            msg = colored(f"\nMessage sent to {recipientName}.\n", "green")
+        else: 
+            if pending_messages.get(recipientName):
+                pending_messages[recipientName].append(msg)
+            else: 
+                pending_messages[recipientName] = [msg]
+            print(f"\nMessage will be sent to {recipientName} after the account is online.\n")
+            msg = colored(f"\nMessage will be delivered to {recipientName} after the account is online.\n", "green")
+        return msg
+
+    else: 
+        msg = colored("\nMessage failed to send! Verify recipient username.\n", "red")
+        print(f"\nRequest to send message to {recipientName} denied.\n")
+        return msg
 
 # Iterate through the accounts and generate a string with all the UUIDs and account names.
-def filter_accounts(filter_wildcard): 
-    acc_lst = [(acc, accounts[acc]) for acc in accounts]
-    r = re.compile(filter_wildcard)
-    filtered_list = list(filter(lambda x: r.match(x[1]), acc_lst))
-    acc_str = "\nFiltered Accounts:\n"
-    for acc in filtered_list:
-        next_acc = "\n" + acc[1] + " (UUID: " + acc[0] + ")" + "\n"
-        acc_str += next_acc
+def filter_accounts(request): 
+    print(f'\nFiltering accounts.\n')
+
+    # Find a list of matching accounts.
+    fltr = request.filter
+    fun = lambda x: re.fullmatch(fltr, x)
+    filtered_accounts = list(filter(fun, accounts))
+
+    # Output a list of users, and whether they are currently online.
+    if len(list(filtered_accounts)) > 0:
+        acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
+                (colored("(live)", "green") if u in live_users else ""))
+                for u in filtered_accounts]) + "\n"
+
+    # No matching accounts on the server.
+    else:
+        acc_str = colored("\nNo matching users!\n", "red")
+
     return acc_str
 
 # The main wire protocol specifying how information should be sent and received. 
@@ -101,7 +157,7 @@ def wire_protocol(connection):
             msg = send_msg(msg_list[1], msg_list[2])
 
         # Delete an account
-        # Usage: d|<uuid_to_delete>
+        # Usage: d|<confirm_username>
         elif op_code == 'd':
             msg = delete_account(msg_list[1])
     
@@ -109,13 +165,6 @@ def wire_protocol(connection):
         # Usage: f|<filter_wildcard>
         elif op_code == 'f':
             msg = filter_accounts(msg_list[1])
-        
-        # Disconnect a user.
-        # Usage: q|<uuid_to_disconnect>
-        elif op_code == 'q':
-            msg = disconnect_user(msg_list[1])
-            connection.send(msg.encode('UTF-8')) 
-            live_users[msg_list[1]].close()
 
         # Handles an invalid request and lists the correct usage for the user. 
         else:

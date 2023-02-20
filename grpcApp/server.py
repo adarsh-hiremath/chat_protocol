@@ -53,9 +53,9 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         # Check if the user is already logged in.
         if request.username in self.live_users:
-            msg = f"\nUser {request.username} already logged in, please try again.\n"
+            msg = f"\nUser {request.username} already logged in. Please try again.\n"
             msg = colored(msg, "red")
-            print(f"login as user {request.username} denied")
+            print(f"\nLogin as user {request.username} denied\n")
             return app.LoginReply(success=False, message=msg)
 
         # Check if the user has created an account.
@@ -70,49 +70,49 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
             self.live_users.append(request.username)
             msg = f"\nLogin successful - welcome back {request.username}!\n"
             msg = colored(msg, "green")
-            print(f"login as user {request.username} completed")
+            print(f"\nLogin as user {request.username} completed.\n")
             return app.LoginReply(success=True, message=msg, username=request.username)
 
 
     def listAccounts(self, request, context):
         """List all of the registered users. (u)"""
 
-        print(f"listing accounts")
+        print(f"\nListing accounts\n")
 
         # Output a list of users, and whether they are currently online.
         if len(list(self.accounts)) > 0:
-            str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
+            acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
                     (colored("(live)", "green") if u in self.live_users else ""))
                     for u in self.accounts]) + "\n"
         
         # No registered users on the server.
         else:
-            str = colored("\nNo existing users!\n", "red")
+            acc_str = colored("\nNo existing users!\n", "red")
 
-        return app.ServerReply(message=str)
+        return app.ServerReply(message=acc_str)
 
 
     def filterAccounts(self, request, context):
         """Filter accounts using a regex. (f|<filter_regex>)"""
 
-        print(f"filtering accounts")
+        print(f"\nFiltering accounts.\n")
 
         # Find a list of matching accounts.
         fltr = request.filter
         fun = lambda x: re.fullmatch(fltr, x)
-        filteredAccounts = list(filter(fun, self.accounts))
+        filtered_accounts = list(filter(fun, self.accounts))
 
         # Output a list of users, and whether they are currently online.
-        if len(list(filteredAccounts)) > 0:
-            str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
+        if len(list(filtered_accounts)) > 0:
+            acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
                     (colored("(live)", "green") if u in self.live_users else ""))
-                    for u in filteredAccounts]) + "\n"
+                    for u in filtered_accounts]) + "\n"
 
         # No matching accounts on the server.
         else:
-            str = colored("\nNo matching users!\n", "red")
+            acc_str = colored("\nNo matching users!\n", "red")
 
-        return app.ServerReply(message=str)
+        return app.ServerReply(message=acc_str)
 
 
     def sendMessage(self, request: app.Message, context):
@@ -140,7 +140,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
     def deleteAccount(self, request: app.Account, context):
         """Delete the current user's account. (d|<confirm_username>)"""
         
-        print(f"user {request.username} requesting account deletion")
+        print(f"\nUser {request.username} requesting account deletion.\n")
 
         # User can be deleted. Remove from associated data structures.
         if request.username in self.accounts:
@@ -148,12 +148,12 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
             if self.messages.get(request.username): 
                 self.messages.pop(request.username)
             msg = colored(f"\nAccount {request.username} successfully deleted!\n", "green")
-            print(f"user {request.username} account deleted")
+            print(f"\nUser {request.username} account deleted.\n")
 
         # User has already been deleted.
         else:
             msg = colored(f"\nYour account has already been deleted.\n", "red")
-            print(f"user {request.username} account already deleted")
+            print(f"\nUser {request.username} account already deleted.\n")
 
         return app.ServerReply(message=msg)
 
