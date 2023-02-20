@@ -34,7 +34,7 @@ def create_account(msg_list, connection):
     
     accounts.append(username)
     print(f"\nUser {username} account created")
-    msg = f"\nNew account created! User ID: {username}. Please log in.\n"
+    msg = colored (f"\nNew account created! User ID: {username}. Please log in.\n", "green")
     return msg
 
 # Delete the account from the list of accounts. 
@@ -60,7 +60,7 @@ def delete_account(msg_list):
 def list_accounts(): 
     print(f'\nListing accounts\n')
 
-    if len(list(accounts)) < 0: 
+    if accounts: 
         acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
                     (colored("(live)", "green") if u in live_users else ""))
                     for u in accounts]) + "\n"
@@ -72,14 +72,14 @@ def list_accounts():
 
 # Check that the user is not already logged in, log in to a particular user, and deliver unreceived messages if applicable.
 def login(msg_list, connection): 
-    print(f"\nLogin as user {username} requested\n")
-
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage:   l|<username>\n", "red"))
         return msg
     
     username = msg_list[1]
 
+    print(f"\nLogin as user {username} requested\n")
+    
     if username in live_users: 
         print(f"\Login as {username} denied.\n")
         msg = colored(f"\nUser {username} already logged in. Please try again.\n", "red")
@@ -94,7 +94,7 @@ def login(msg_list, connection):
         live_users[username] = connection
         print (f"\nLogin as user {username} completed.\n")
         msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
-        if len(pending_messages.get(username)) > 0: 
+        if (pending_messages.get(username)):
             print(f"\nDelivering pending messages to {username}.\n")
             send_msg(username, f"\nYou have pending messages! Delivering the  messages now.\n")
             while pending_messages.get(username):

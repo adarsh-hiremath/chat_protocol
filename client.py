@@ -36,7 +36,6 @@ def Main():
                 server.send(msg.encode('UTF-8'))
                 data = server.recv(4096)
                 print(str(data.decode('UTF-8')))
-
                 
 if __name__ == '__main__':
     Main()
