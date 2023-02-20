@@ -77,7 +77,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
     def listAccounts(self, request, context):
         """List all of the registered users. (u)"""
 
-        print(f"listing accounts for user {request.username}")
+        print(f"listing accounts")
 
         # Output a list of users, and whether they are currently online.
         if len(list(self.accounts)) > 0:
@@ -95,7 +95,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
     def filterAccounts(self, request, context):
         """Filter accounts using a regex. (f|<filter_regex>)"""
 
-        print(f"filtering accounts for user {request.username}")
+        print(f"filtering accounts")
 
         # Find a list of matching accounts.
         fltr = request.filter
@@ -118,7 +118,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
     def sendMessage(self, request: app.Message, context):
         """Send a message to a specified other user. (s|<username>|<message>)"""
 
-        print(f"user {request.senderName} requesting message to user {request.receiverName}")
+        print(f"user {request.senderName} requesting message to user {request.recipientName}")
 
         # Check if the recipient is a registered user and send message.
         if request.recipientName in self.accounts:
@@ -127,12 +127,12 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
             else:
                 self.messages[request.recipientName] = [request]
             msg = colored("\nMessage sent!\n", "green")
-            print(f"user {request.senderName} message to user {request.receiverName} sent")
+            print(f"user {request.senderName} message to user {request.recipientName} sent")
 
         # Recipient is not a registered user.
         else:
             msg = colored("\nMessage failed to send! Verify recipient username.\n", "red")
-            print(f"user {request.senderName} message to user {request.receiverName} denied")
+            print(f"user {request.senderName} message to user {request.recipientName} denied")
         
         return app.ServerReply(message=msg)
     
