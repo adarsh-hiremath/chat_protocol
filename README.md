@@ -9,7 +9,7 @@
 <p align="center">
   <a href="#key-features">Overview</a> •
   <a href="#how-to-use">Setup</a> •
-  <a href="#download">How to Use</a> •
+  <a href="#download">How to Use</a> 
 </p>
 
 ## Key Features
@@ -19,8 +19,7 @@ to-end client-server chat application, first with our
 own wire protocol and later with gRPC. 
 * As currently implemented, our chat
 application supports the following:
-- Account creation, login, deletion, and deactiva-
-tion.
+- Account creation, login, deletion, and deactivation.
 - Sending messages between accounts, even when
 some accounts are offline.
 - Listing or filtering all users who have created
@@ -32,7 +31,7 @@ found here. The gRPC implementation is in grpcApp.
   
 ## Setup
 
-To clone and run this application, you'll need [Python3.7.2](https://www.python.org/downloads/release/python-372/). We have a list of requirements which you can find in the requirements.txt file. To install these requirements, run the following in your command line: 
+To clone and run this application, you'll need [Python 3.7.2](https://www.python.org/downloads/release/python-372/). We have a list of requirements which you can find in the requirements.txt file. To install these requirements, run the following in your command line: 
 
 ```bash
 $ pip install -r requirements.txt
