@@ -16,7 +16,7 @@ live_users = {}
 # Create a new account with a given name and associate the account with the appropriate socket. 
 def create_account(msg_list, connection): 
     if len(msg_list) != 2: 
-        msg = (colored("\nInvalid arguments! Usage:   c|<username>\n", "red"))
+        msg = (colored("\nInvalid arguments! Usage: c|<username>\n", "red"))
         connection.send(msg.encode('UTF-8'))
         return 
 
@@ -28,7 +28,7 @@ def create_account(msg_list, connection):
         return msg
     
     if not re.fullmatch("\w{2,20}", username):
-        print(f"User {username} account creation rejected")
+        print(f"\nUser {username} account creation rejected\n")
         msg = colored(f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
         return msg
     
@@ -40,7 +40,7 @@ def create_account(msg_list, connection):
 # Delete the account from the list of accounts. 
 def delete_account(msg_list): 
     if len(msg_list) != 2: 
-        msg = (colored("\nInvalid arguments! Usage:   d|<confirm_account>\n", "red"))
+        msg = (colored("\nInvalid arguments! Usage: d|<confirm_account>\n", "red"))
         return msg
 
     username = msg_list[1]
@@ -73,7 +73,7 @@ def list_accounts():
 # Check that the user is not already logged in, log in to a particular user, and deliver unreceived messages if applicable.
 def login(msg_list, connection): 
     if len(msg_list) != 2: 
-        msg = (colored("\nInvalid arguments! Usage:   l|<username>\n", "red"))
+        msg = (colored("\nInvalid arguments! Usage: l|<username>\n", "red"))
         return msg
     
     username = msg_list[1]
@@ -81,7 +81,7 @@ def login(msg_list, connection):
     print(f"\nLogin as user {username} requested\n")
     
     if username in live_users: 
-        print(f"\Login as {username} denied.\n")
+        print(f"\nLogin as {username} denied.\n")
         msg = colored(f"\nUser {username} already logged in. Please try again.\n", "red")
         return msg
     
@@ -96,34 +96,42 @@ def login(msg_list, connection):
         msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
         if (pending_messages.get(username)):
             print(f"\nDelivering pending messages to {username}.\n")
-            send_msg(username, f"\nYou have pending messages! Delivering the  messages now.\n")
+            send_msg(connection, username, f"\nYou have pending messages! Delivering the  messages now.\n")
             while pending_messages.get(username):
-                send_msg(username, pending_messages[username][0])
+                send_msg(connection, username, pending_messages[username][0])
                 pending_messages[username].pop(0)
         return msg
 
+# Get account from connection refernce by reverse searching the live_users dictionary.
+def get_account(connection):
+    for username, conn in live_users.items():
+        if conn == connection:
+            return username
+        
 # Send a message to the given user.
-def send_msg(recipientName, msg):
-    print(f"\nRequest received to send message to {recipientName}.\n")
+def send_msg(connection, recipient_name, msg):
+    print(f"\nRequest received to send message to {recipient_name}.\n")
 
-    if recipientName in accounts: 
-        if recipientName in live_users:
-            msg += "\n"
-            live_users[recipientName].send(msg.encode('UTF-8'))
-            print(f"\nMessage sent to {recipientName}.\n")
-            msg = colored(f"\nMessage sent to {recipientName}.\n", "green")
+    if recipient_name in accounts: 
+        sender_name = get_account(connection)
+        if recipient_name in live_users:
+            msg = colored(f"\n[{sender_name}] ", "grey") + msg + "\n"
+            live_users[recipient_name].send(msg.encode('UTF-8'))
+            print(f"\nMessage sent to {recipient_name}.\n")
+            msg = colored(f"\nMessage sent to {recipient_name}.\n", "green")
         else: 
-            if pending_messages.get(recipientName):
-                pending_messages[recipientName].append(msg)
+            msg = colored(f"\n[{sender_name}] ", "grey") + msg + "\n"
+            if pending_messages.get(recipient_name):
+                pending_messages[recipient_name].append(msg)
             else: 
-                pending_messages[recipientName] = [msg]
-            print(f"\nMessage will be sent to {recipientName} after the account is online.\n")
-            msg = colored(f"\nMessage will be delivered to {recipientName} after the account is online.\n", "green")
+                pending_messages[recipient_name] = [msg]
+            print(f"\nMessage will be sent to {recipient_name} after the account is online.\n")
+            msg = colored(f"\nMessage will be delivered to {recipient_name} after the account is online.\n", "green")
         return msg
 
     else: 
         msg = colored("\nMessage failed to send! Verify recipient username.\n", "red")
-        print(f"\nRequest to send message to {recipientName} denied.\n")
+        print(f"\nRequest to send message to {recipient_name} denied.\n")
         return msg
 
 # Filter accounts by a given regex.
@@ -131,7 +139,7 @@ def filter_accounts(msg_list):
     print(f'\nFiltering accounts.\n')
 
     if len(msg_list) != 2: 
-        msg = (colored("\nInvalid arguments! Usage:   f|<filter_regex>\n", "red"))
+        msg = (colored("\nInvalid arguments! Usage: f|<filter_regex>\n", "red"))
         return msg
     
     request = msg_list[1]
@@ -183,9 +191,9 @@ def wire_protocol(connection):
         # Usage: s|<recipient_username>|<message>
         elif op_code == 's':
             if len(msg_list) != 3: 
-                msg = (colored("\nInvalid arguments! Usage:   s|<recipient_username>|<message>\n", "red"))
+                msg = (colored("\nInvalid arguments! Usage: s|<recipient_username>|<message>\n", "red"))
             else: 
-                msg = send_msg(msg_list[1], msg_list[2])
+                msg = send_msg(connection, msg_list[1], msg_list[2])
 
         # Delete an account
         # Usage: d|<confirm_username>
