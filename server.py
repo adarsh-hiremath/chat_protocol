@@ -56,13 +56,26 @@ def delete_account(msg_list):
         msg = colored(f"\nAccount {username} has been deleted.\n", "green")
         return msg
 
+# Check which socket connections are still live. 
+def check_live_users():
+    curr_users = []
+    for user in live_users:
+        try:
+            live_users[user].send("".encode('UTF-8'))
+            curr_users.append(user)
+        except:
+            pass
+    return curr_users
+
 # Displays all account names and their status (live or not). 
 def list_accounts(): 
     print(f'\nListing accounts\n')
 
+    curr_users = check_live_users()
+
     if accounts: 
         acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                    (colored("(live)", "green") if u in live_users else ""))
+                    (colored("(live)", "green") if u in curr_users else ""))
                     for u in accounts]) + "\n"
     
     else: 
@@ -144,18 +157,17 @@ def filter_accounts(msg_list):
     
     request = msg_list[1]
 
-    # Find a list of matching accounts.
     fltr = request.filter
     fun = lambda x: re.fullmatch(fltr, x)
     filtered_accounts = list(filter(fun, accounts))
 
-    # Output a list of users, and whether they are currently online.
+    curr_users = check_live_users()
+
     if len(list(filtered_accounts)) > 0:
         acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                (colored("(live)", "green") if u in live_users else ""))
+                (colored("(live)", "green") if u in curr_users else ""))
                 for u in filtered_accounts]) + "\n"
-
-    # No matching accounts on the server.
+        
     else:
         acc_str = colored("\nNo matching users!\n", "red")
 
