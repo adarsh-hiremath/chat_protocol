@@ -43,10 +43,10 @@ Next, you'll need to set the appropriate IP address and port.
 
 | Syntax | Description |
 | --- | ----------- |
-| Usage: c &#124; <\username> | Create an account. |
-| Usage: l &#124; <\username> | Log into an account. |
+| Usage: c &#124; \_<username>\_ | Create an account. |
+| Usage: l &#124; \_<username>\_  | Log into an account. |
 | Usage: u | List all users and their activity status. | 
-| Usage: s &#124; <\recipient_username> &#124; <\message> | Send a message to a user. | 
-| Usage: d &#124; <\confirm_username> | Delete an account. | 
-| Usage: f &#124; <\filter_regex> | Filter accounts using a wildcard. | 
+| Usage: s &#124; \_<recipient_username>\_ &#124; \_<message>\_ | Send a message to a user. | 
+| Usage: d &#124; \_<confirm_username>\_ | Delete an account. | 
+| Usage: f &#124; \_<filter_regex>\_ | Filter accounts using a wildcard. | 
 | Usage: h | Print a list of all the commands. |
