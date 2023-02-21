@@ -41,4 +41,12 @@ Next, you'll need to set the appropriate IP address and port.
 
 ## How to Use
 
-
+| Syntax | Description |
+| --- | ----------- |
+| Usage: c|<username> | Create an account. |
+| Usage: l|<username> | Log into an account. |
+| Usage: u | List all users and their activity status. | 
+| Usage: s|<recipient_username>|<message> | Send a message to a user. | 
+| Usage: d|<confirm_username> | Delete an account. | 
+| Usage: f|<filter_regex> | Filter accounts using a wildcard. | 
+| Usage: h | Print a list of all the commands. |

@@ -203,7 +203,7 @@ def wire_protocol(connection):
         elif op_code == 'l':
             msg = login(msg_list, connection)
 
-        # List all users and their names. 
+        # List all users and their status. 
         # Usage: u
         elif op_code == 'u':
             msg = list_accounts()
