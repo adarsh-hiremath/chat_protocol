@@ -44,9 +44,9 @@ Next, you'll need to set the appropriate IP address and port.
 | Syntax | Description |
 | --- | ----------- |
 | Usage: c &#124; \<username\> | Create an account. |
-| Usage: l &#124; <username>  | Log into an account. |
+| Usage: l &#124; \<username\>  | Log into an account. |
 | Usage: u | List all users and their activity status. | 
-| Usage: s &#124; <recipient_username> &#124; <message> | Send a message to a user. | 
-| Usage: d &#124; <confirm_username> | Delete an account. | 
-| Usage: f &#124; <filter_regex> | Filter accounts using a wildcard. | 
+| Usage: s &#124; \<recipient_username\> &#124; \<message\> | Send a message to a user. | 
+| Usage: d &#124; \<confirm_username\> | Delete an account. | 
+| Usage: f &#124; \<filter_regex\> | Filter accounts using a wildcard. | 
 | Usage: h | Print a list of all the commands. |
