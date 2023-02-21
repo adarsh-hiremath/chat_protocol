@@ -6,7 +6,7 @@ import chatapp_pb2 as chatapp__pb2
 
 
 class ChatAppStub(object):
-    """The greeting service definition.
+    """Chat app service definition.
     """
 
     def __init__(self, channel):
@@ -58,7 +58,7 @@ class ChatAppStub(object):
 
 
 class ChatAppServicer(object):
-    """The greeting service definition.
+    """Chat app service definition.
     """
 
     def createAccount(self, request, context):
@@ -86,8 +86,7 @@ class ChatAppServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def sendMessage(self, request, context):
-        """rpc logOut (Account) returns (ServerReply) {};
-        """
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -161,7 +160,7 @@ def add_ChatAppServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class ChatApp(object):
-    """The greeting service definition.
+    """Chat app service definition.
     """
 
     @staticmethod

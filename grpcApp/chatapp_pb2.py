@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rchatapp.proto\x12\x07\x63hatapp\"\x1b\n\x07\x41\x63\x63ount\x12\x10\n\x08username\x18\x01 \x01(\t\"\x1e\n\x0bServerReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x07\n\x05\x45mpty\"E\n\x07Message\x12\x12\n\nsenderName\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x15\n\rrecipientName\x18\x03 \x01(\t\"\x1e\n\x0c\x46ilterString\x12\x0e\n\x06\x66ilter\x18\x01 \x01(\t\"@\n\nLoginReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\";\n\rDeleteRequest\x12\x12\n\ndeleteUser\x18\x01 \x01(\t\x12\x16\n\x0erequestingUser\x18\x02 \x01(\t\"/\n\x0b\x44\x65leteReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xde\x03\n\x07\x43hatApp\x12\x39\n\rcreateAccount\x12\x10.chatapp.Account\x1a\x14.chatapp.ServerReply\"\x00\x12\x30\n\x05logIn\x12\x10.chatapp.Account\x1a\x13.chatapp.LoginReply\"\x00\x12\x36\n\x0clistAccounts\x12\x0e.chatapp.Empty\x1a\x14.chatapp.ServerReply\"\x00\x12?\n\x0e\x66ilterAccounts\x12\x15.chatapp.FilterString\x1a\x14.chatapp.ServerReply\"\x00\x12\x37\n\x0bsendMessage\x12\x10.chatapp.Message\x1a\x14.chatapp.ServerReply\"\x00\x12\x39\n\rdeleteAccount\x12\x10.chatapp.Account\x1a\x14.chatapp.ServerReply\"\x00\x12;\n\x11listenForMessages\x12\x10.chatapp.Account\x1a\x10.chatapp.Message\"\x00\x30\x01\x12<\n\x10listenForReplies\x12\x0e.chatapp.Empty\x1a\x14.chatapp.ServerReply\"\x00\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rchatapp.proto\x12\x07\x63hatapp\"\x1b\n\x07\x41\x63\x63ount\x12\x10\n\x08username\x18\x01 \x01(\t\"\x1e\n\x0bServerReply\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x07\n\x05\x45mpty\"E\n\x07Message\x12\x12\n\nsenderName\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x15\n\rrecipientName\x18\x03 \x01(\t\"\x1e\n\x0c\x46ilterString\x12\x0e\n\x06\x66ilter\x18\x01 \x01(\t\"@\n\nLoginReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t2\xde\x03\n\x07\x43hatApp\x12\x39\n\rcreateAccount\x12\x10.chatapp.Account\x1a\x14.chatapp.ServerReply\"\x00\x12\x30\n\x05logIn\x12\x10.chatapp.Account\x1a\x13.chatapp.LoginReply\"\x00\x12\x36\n\x0clistAccounts\x12\x0e.chatapp.Empty\x1a\x14.chatapp.ServerReply\"\x00\x12?\n\x0e\x66ilterAccounts\x12\x15.chatapp.FilterString\x1a\x14.chatapp.ServerReply\"\x00\x12\x37\n\x0bsendMessage\x12\x10.chatapp.Message\x1a\x14.chatapp.ServerReply\"\x00\x12\x39\n\rdeleteAccount\x12\x10.chatapp.Account\x1a\x14.chatapp.ServerReply\"\x00\x12;\n\x11listenForMessages\x12\x10.chatapp.Account\x1a\x10.chatapp.Message\"\x00\x30\x01\x12<\n\x10listenForReplies\x12\x0e.chatapp.Empty\x1a\x14.chatapp.ServerReply\"\x00\x30\x01\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'chatapp_pb2', globals())
@@ -32,10 +32,6 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _FILTERSTRING._serialized_end=197
   _LOGINREPLY._serialized_start=199
   _LOGINREPLY._serialized_end=263
-  _DELETEREQUEST._serialized_start=265
-  _DELETEREQUEST._serialized_end=324
-  _DELETEREPLY._serialized_start=326
-  _DELETEREPLY._serialized_end=373
-  _CHATAPP._serialized_start=376
-  _CHATAPP._serialized_end=854
+  _CHATAPP._serialized_start=266
+  _CHATAPP._serialized_end=744
 # @@protoc_insertion_point(module_scope)

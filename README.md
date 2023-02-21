@@ -8,8 +8,8 @@
 
 <p align="center">
   <a href="#key-features">Overview</a> •
-  <a href="#how-to-use">Setup</a> •
-  <a href="#download">How to Use</a> 
+  <a href="#setup">Setup</a> •
+  <a href="#how-to-use">How to Use</a> 
 </p>
 
 ## Key Features
@@ -27,7 +27,6 @@ accounts.
 * The source code for our chat application can be
 found here. The gRPC implementation is in grpcApp. 
 * You can also find our project writeup at template.pdf
-* All setup and usage functionality will be for the non-gRPC version of our app.  
   
 ## Setup
 

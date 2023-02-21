@@ -10,22 +10,6 @@ class Account(_message.Message):
     username: str
     def __init__(self, username: _Optional[str] = ...) -> None: ...
 
-class DeleteReply(_message.Message):
-    __slots__ = ["message", "success"]
-    MESSAGE_FIELD_NUMBER: _ClassVar[int]
-    SUCCESS_FIELD_NUMBER: _ClassVar[int]
-    message: str
-    success: bool
-    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
-
-class DeleteRequest(_message.Message):
-    __slots__ = ["deleteUser", "requestingUser"]
-    DELETEUSER_FIELD_NUMBER: _ClassVar[int]
-    REQUESTINGUSER_FIELD_NUMBER: _ClassVar[int]
-    deleteUser: str
-    requestingUser: str
-    def __init__(self, deleteUser: _Optional[str] = ..., requestingUser: _Optional[str] = ...) -> None: ...
-
 class Empty(_message.Message):
     __slots__ = []
     def __init__(self) -> None: ...

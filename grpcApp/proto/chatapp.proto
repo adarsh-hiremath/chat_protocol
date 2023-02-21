@@ -1,14 +1,14 @@
+// python -m grpc_tools.protoc -Iproto --python_out=. --pyi_out=. --grpc_python_out=. chatapp.proto
 syntax = "proto3";
 
 package chatapp;
 
-// The greeting service definition.
+// Chat app service definition.
 service ChatApp {
   rpc createAccount (Account) returns (ServerReply) {};
   rpc logIn (Account) returns (LoginReply) {};
   rpc listAccounts (Empty) returns (ServerReply) {};
   rpc filterAccounts (FilterString) returns (ServerReply) {};
-  // rpc logOut (Account) returns (ServerReply) {};
   rpc sendMessage (Message) returns (ServerReply) {};
   rpc deleteAccount (Account) returns (ServerReply) {};
   rpc listenForMessages (Account) returns (stream Message) {};
@@ -40,18 +40,9 @@ message FilterString {
   string filter = 1;
 }
 
+// Response sent to client after requesting a login.
 message LoginReply {
   bool success = 1;
   string message = 2;
   string username = 3;
-}
-
-message DeleteRequest {
-  string deleteUser = 1;
-  string requestingUser = 2;
-}
-
-message DeleteReply {
-  bool success = 1;
-  string message = 2;
 }
