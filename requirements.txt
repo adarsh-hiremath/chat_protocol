@@ -1,6 +1,7 @@
-# requirements ofr the project
-# pip install -r requirements.txt
-
+grpc==1.0.0
+grpcio==1.52.0
+protobuf==4.22.0
+termcolor==2.2.0
 pip>=9.0.1
 grpcio>=1.40.0
 grpcio-tools>=1.40.0
