@@ -7,7 +7,7 @@ from termcolor import colored
 # A dictionary with username as key and pending messages as values. 
 pending_messages = {}
 
-# A dictionary with usernames as keys and account names as values. 
+# A list of account names. 
 accounts = []
 
 # A dictionary with usernames as keys and connection references as values.
@@ -93,7 +93,9 @@ def login(msg_list, connection):
 
     print(f"\nLogin as user {username} requested\n")
     
-    if username in live_users: 
+    curr_users = check_live_users()
+
+    if username in curr_users: 
         print(f"\nLogin as {username} denied.\n")
         msg = colored(f"\nUser {username} already logged in. Please try again.\n", "red")
         return msg
@@ -107,37 +109,44 @@ def login(msg_list, connection):
         live_users[username] = connection
         print (f"\nLogin as user {username} completed.\n")
         msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
-        if (pending_messages.get(username)):
+        if username in pending_messages:
             print(f"\nDelivering pending messages to {username}.\n")
-            send_msg(connection, username, f"\nYou have pending messages! Delivering the  messages now.\n")
-            while pending_messages.get(username):
-                send_msg(connection, username, pending_messages[username][0])
-                pending_messages[username].pop(0)
+            send_msg(connection, username, f"\nYou have pending messages! Delivering the  messages now...")
+            deliver_pending_messages(username)
         return msg
 
 # Get account from connection refernce by reverse searching the live_users dictionary.
 def get_account(connection):
-    for username, conn in live_users.items():
-        if conn == connection:
+    for username in live_users:
+        if live_users[username] == connection:
             return username
-        
+
+# Deliver pending messages to a user.     
+def deliver_pending_messages(recipient_name):
+    while pending_messages.get(recipient_name):
+        live_users[recipient_name].send(pending_messages[recipient_name][0].encode('UTF-8')) 
+        pending_messages[recipient_name].pop(0)
+
 # Send a message to the given user.
 def send_msg(connection, recipient_name, msg):
     print(f"\nRequest received to send message to {recipient_name}.\n")
 
+    curr_users = check_live_users()
+
     if recipient_name in accounts: 
         sender_name = get_account(connection)
-        if recipient_name in live_users:
+        if recipient_name in curr_users:
             msg = colored(f"\n[{sender_name}] ", "grey") + msg + "\n"
             live_users[recipient_name].send(msg.encode('UTF-8'))
             print(f"\nMessage sent to {recipient_name}.\n")
             msg = colored(f"\nMessage sent to {recipient_name}.\n", "green")
-        else: 
-            msg = colored(f"\n[{sender_name}] ", "grey") + msg + "\n"
-            if pending_messages.get(recipient_name):
-                pending_messages[recipient_name].append(msg)
+        else:
+            msg = colored(f"\n[{sender_name}] ", "grey") + msg
+            if recipient_name in pending_messages:
+                pending_messages[recipient_name] = pending_messages[recipient_name].append(msg)
             else: 
                 pending_messages[recipient_name] = [msg]
+            print(pending_messages)
             print(f"\nMessage will be sent to {recipient_name} after the account is online.\n")
             msg = colored(f"\nMessage will be delivered to {recipient_name} after the account is online.\n", "green")
         return msg
@@ -237,7 +246,6 @@ def wire_protocol(connection):
 
         # Send encoded acknowledgment to the connected client
         connection.send(msg.encode('UTF-8')) 
-
 
 def Main():
     # Set IP address and local port.

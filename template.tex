@@ -75,6 +75,7 @@ Here, we will specify the functionalities supported by our wire protocol as well
     \item List all users. Usage: u
     \item Filter accounts. Usage: f|<filterRegex>
     \item Delete account. Usage: d|<confirmUsername>
+    \item Print a list of all the commands. Usage: h
 \end{itemize}
 
 Commands like logging out, listing all users, and deleting an account become easier to implement with a delimeter system. Without a delimeter system, a client sending "d," for example, would be ambiguous for the server because there is no way to distinguish between sending the character "d" to another client or deleting an account. A delimeter system solves this because the client can still send the character "d" to a user as long as they specify their desired operation is a message send. 
@@ -88,23 +89,37 @@ To keep our wire protocol simple and minimize code repetition, we decided to abs
 
 \begin{python}
     if op_code == 'c': 
-        msg = create_account(msg_list[1], 
+        msg = create_account(msg_list, 
         connection)
     elif op_code == 'l':
-        msg = login(msg_list[1], connection)
+        msg = login(msg_list, connection)
     elif op_code == 'u':
         msg = list_accounts()
 \end{python}
 
-Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is an example of our implementation for our function that sends messages. 
+Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is an example of our implementation for our function that lists users. 
 
 \begin{python}
-    def send_msg(uuid, msg):
-    print(f"connection: {live_users[uuid]}")
-    live_users[uuid].send
-    (msg.encode('UTF-8'))
-    return f"\nMessage sent to {uuid}.\n"
+    def list_accounts(): 
+        print(f'\nListing accounts\n')
+
+        curr_users = check_live_users()
+
+        if accounts: 
+            acc_str = "\n" + "\n".join
+            ([(colored(f"{u} ", "blue") + 
+            (colored("(live)", "green") 
+            if u in curr_users else ""))
+            for u in accounts]) + "\n"
+        
+        else: 
+            acc_str = colored
+            ("\nNo existing users!\n", "red")
+
+        return acc_str
 \end{python}
+
+In our $list\_accounts()$ function, we have a helper function called $check\_live\_users()$ which returns a list of all the users that are currently logged in by manually pinging the sockets. We use this list to determine whether a user is currently logged in or not. If a user is logged in, we print their username with a green "live" identifier. If a user is not logged in, we print their username in blue. Similar helper functions are implemented for every operation in our wire protocol.
 
 \section{Account Handling}
 
@@ -112,12 +127,12 @@ To implement our account handling schema, we debated between using a database or
 
 We have three main data structures that we use throughout our chat application. 
 \begin{itemize}
-    \item $pending\_messages$: a dictionary with UUIDs as keys and pending messages as values. 
-    \item $accounts$: a dictionary with UUIDs as keys and account names as values that we call 
-    \item $live\_users$: a dictionary with UUIDs as keys and connection references as values. 
+    \item $pending\_messages$: a dictionary with username as key and pending messages as values. 
+    \item $accounts$: a list of account names. 
+    \item $live\_users$: A dictionary with usernames as keys and socket connection references as values.
 \end{itemize}
 
-We decided to use a single dictionary for pending messages to handle the scenario where a user is offline. Storing all messages sent and received in a dictionary would be a waste of space because our server only cares if the user has seen the message intended for them. When a user goes online, our program checks whether there are any pending messages to be sent to them and sends messages accordingly. We have a single dictionary for accounts and their corresponding names in order to implement the listing users portion of the assignment. Finally, our live users dictionary stores all the users that are currently logged in so that the server can check if a user is logged in before sending a message to them. We also store the references to the socket connection in order for the server to send messages over the right connection.
+We decided to use a single dictionary for pending messages to handle the scenario where a user is offline. Storing all messages sent and received in a dictionary would be a waste of space because our server only cares if the user has seen the message intended for them. When a user goes online, our program checks whether there are any pending messages to be sent to them and sends messages accordingly. We have a single list for account names in order to implement the listing users portion of the assignment. Finally, our live users dictionary stores all the users that are currently logged in so that the server can check if a user is logged in before sending a message to them. We also store the references to the socket connection in order for the server to send messages over the right connection.
 
 \section{Original Wire Protocol vs. gRPC}
 \end{document}
