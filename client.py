@@ -15,6 +15,18 @@ def Main():
     # Connect to the socket at the specified port and IP address. 
     server.connect((ip, port))
 
+    # Welcome message. 
+    msg = "\nWelcome to the chat application! Begin by logging in or creating an account. Below, you will find a list of supported commands :\n"
+    msg += "\nCreate an account.        c|<username>"
+    msg += "\nLog into an account.      l|<username>"
+    msg += "\nSend a message.           s|<recipient_username>|<message>"
+    msg += "\nFilter accounts.          f|<filter_regex>"
+    msg += "\nDelete your account.      d|<confirm_username>"
+    msg += "\nList users and names.     u"
+    msg += "\nUsage help (this page).   h\n"
+    msg = colored(msg, 'yellow')
+    print(msg)
+
     # Main loop for clients to receive and send messages to the server.
     while True:
         # List of input streams. 

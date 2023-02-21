@@ -205,6 +205,8 @@ def wire_protocol(connection):
         elif op_code == 'f':
             msg = filter_accounts(msg_list)
         
+        # Print a list of all the commands.
+        # Usage: h
         elif op_code == 'h':
             msg = "\nUsage help below:\n"
             msg += "\nCreate an account.        c|<username>"
@@ -214,7 +216,7 @@ def wire_protocol(connection):
             msg += "\nDelete your account.      d|<confirm_username>"
             msg += "\nList users and names.     u"
             msg += "\nUsage help (this page).   h\n"
-            msg = colored(msg, 'red')
+            msg = colored(msg, 'yellow')
 
         # Handles an invalid request and lists the correct usage for the user. 
         else:
