@@ -111,7 +111,7 @@ def login(msg_list, connection):
         msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
         if username in pending_messages:
             print(f"\nDelivering pending messages to {username}.\n")
-            send_msg(connection, username, f"\nYou have pending messages! Delivering the  messages now...")
+            send_msg(connection, username, colored(f"\nYou have pending messages! Delivering the  messages now...", "green"))
             deliver_pending_messages(username)
         return msg
 
