@@ -3,7 +3,7 @@ import chatapp_pb2 as app
 import chatapp_pb2_grpc as rpc
 from termcolor import colored
 
-ip = "10.250.129.194"
+ip = "localhost"
 port = 50051
 
 class Client:

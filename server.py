@@ -13,8 +13,9 @@ accounts = []
 # A dictionary with usernames as keys and connection references as values.
 live_users = {}
 
-# Create a new account with a given name and associate the account with the appropriate socket. 
+
 def create_account(msg_list, connection): 
+    """Create an account, and associate with the appropriate socket. (c|<username>)"""
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: c|<username>\n", "red"))
         connection.send(msg.encode('UTF-8'))
@@ -33,12 +34,14 @@ def create_account(msg_list, connection):
         return msg
     
     accounts.append(username)
-    print(f"\nUser {username} account created")
+    print(f"\nUser {username} account created\n")
     msg = colored (f"\nNew account created! User ID: {username}. Please log in.\n", "green")
     return msg
 
-# Delete the account from the list of accounts. 
+
 def delete_account(msg_list): 
+    """Delete the current user's account. (d|<confirm_username>)"""
+
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: d|<confirm_account>\n", "red"))
         return msg
@@ -56,8 +59,9 @@ def delete_account(msg_list):
         msg = colored(f"\nAccount {username} has been deleted.\n", "green")
         return msg
 
-# Check which socket connections are still live. 
+
 def check_live_users():
+    """Check which socket connections are still live."""
     curr_users = []
     for user in live_users:
         try:
@@ -67,8 +71,10 @@ def check_live_users():
             pass
     return curr_users
 
-# Displays all account names and their status (live or not). 
+
 def list_accounts(): 
+    """List all of the registered users and display their status. (u)"""
+
     print(f'\nListing accounts\n')
 
     curr_users = check_live_users()
@@ -249,7 +255,7 @@ def wire_protocol(connection):
 
 def Main():
     # Set IP address and local port.
-    ip = "10.250.129.194"
+    ip = "localhost"
     port = 50051
     
     # Specify the address domain and read properties of the socket. 
@@ -262,10 +268,12 @@ def Main():
     # Listen for a maximum of 100 active connections (can be adjusted).
     server.listen(100)
 
+    print(f"Server started, listening on port {port}.\n")
+
     # Main loop for the server to listen to client requests.
     while True:
         connection, address = server.accept()
-        print('\nConnected to :', address[0], ':', address[1])
+        print('\nConnected to:', address[0], ':', address[1])
         start_new_thread(wire_protocol, (connection,))
 
 if __name__ == '__main__':

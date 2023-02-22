@@ -4,7 +4,7 @@ import chatapp_pb2 as app
 import chatapp_pb2_grpc as rpc
 from termcolor import colored
 
-ip = "10.250.129.194"
+ip = "localhost"
 port = 50051
 
 class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc file which is generated
@@ -29,19 +29,19 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
         # Check if the username is already in use.
         if request.username in self.accounts:
             msg = colored(f"\nAccount {request.username} already exists!\n", "red")
-            print(f"user {request.username} account creation rejected")
+            print(f"\nUser {request.username} account creation rejected\n")
             return app.ServerReply(message=msg)
 
         # Check that the username is a valid alphanumeric.
         if not re.fullmatch("\w{2,20}", request.username):
             msg = colored(f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
-            print(f"user {request.username} account creation rejected")
+            print(f"\nUser {request.username} account creation rejected\n")
             return app.ServerReply(message=msg)
 
         # Register the user.
         self.accounts.append(request.username)
         msg = colored(f"\nWelcome, {request.username}! Please log in. \n", "green")
-        print(f"user {request.username} account created")
+        print(f"\nUser {request.username} account created\n")
 
         return app.ServerReply(message=msg)
 
@@ -183,7 +183,7 @@ def serve():
     rpc.add_ChatAppServicer_to_server(ChatApp(), server)
     server.add_insecure_port(ip + ':' + str(port))
     server.start()
-    print(f"server started, listening on port {port}.")
+    print(f"Server started, listening on port {port}.\n")
     server.wait_for_termination()
 
 
