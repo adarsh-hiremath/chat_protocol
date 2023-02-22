@@ -249,8 +249,8 @@ def wire_protocol(connection):
 
 def Main():
     # Set IP address and local port.
-    ip = "127.0.0.1"
-    port = 2048
+    ip = "10.250.129.194"
+    port = 50051
     
     # Specify the address domain and read properties of the socket. 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

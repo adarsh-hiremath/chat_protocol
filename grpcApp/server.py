@@ -4,7 +4,7 @@ import chatapp_pb2 as app
 import chatapp_pb2_grpc as rpc
 from termcolor import colored
 
-ip = "127.0.0.1"
+ip = "10.250.129.194"
 port = 50051
 
 class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc file which is generated
