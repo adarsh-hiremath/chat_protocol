@@ -97,29 +97,34 @@ To keep our wire protocol simple and minimize code repetition, we decided to abs
         msg = list_accounts()
 \end{python}
 
-Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is an example of our implementation for our function that lists users. 
+Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is a snippet from our login method with a helper function $verify_dupes(connection)$: 
 
 \begin{python}
-    def list_accounts(): 
-        print(f'\nListing accounts\n')
+    def login(msg_list, connection):
+        """Check that the user is not already 
+        logged in, log in to a particular 
+        user, and deliver unreceived messages 
+        if applicable."""
 
-        curr_users = check_live_users()
+        if len(msg_list) != 2:
+            msg = (
+            colored
+            ("\nInvalid arguments! 
+            Usage: l|<username>\n", 
+            "red"))
+            return msg
 
-        if accounts: 
-            acc_str = "\n" + "\n".join
-            ([(colored(f"{u} ", "blue") + 
-            (colored("(live)", "green") 
-            if u in curr_users else ""))
-            for u in accounts]) + "\n"
-        
-        else: 
-            acc_str = colored
-            ("\nNo existing users!\n", "red")
+        check_duplicate = 
+        verify_dupes(connection)
 
-        return acc_str
+        if check_duplicate == True:
+            msg = (colored("\nPlease log out 
+            first!\n", 
+            "red"))
+            return msg
 \end{python}
 
-In our $list\_accounts()$ function, we have a helper function called $check\_live\_users()$ which returns a list of all the users that have valid socket connections by manually pinging the sockets. We use this list to determine whether a user is currently logged in or not. If a user is logged in, we print their username with a green "live" identifier. If a user is not logged in, we print their username in blue. Similar helper functions are implemented for every operation in our wire protocol.
+In our $login()$ function, we have a helper function called $verify\_dupes()$ which iterates through the connection objects of all the logged in users and compares them to the connection object of the user making a request. This identifies whether or not the user attempting to log in is already logged into another account. Similar helper functions are implemented for every operation in our wire protocol and greatly improve the efficiency of our code. 
 
 \section{Account Handling}
 
