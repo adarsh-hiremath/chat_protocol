@@ -1,5 +1,9 @@
 from concurrent import futures
-import logging, grpc, time, random, re
+import logging
+import grpc
+import time
+import random
+import re
 import chatapp_pb2 as app
 import chatapp_pb2_grpc as rpc
 from termcolor import colored
@@ -7,11 +11,13 @@ from termcolor import colored
 ip = "localhost"
 port = 50051
 
-class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc file which is generated
+
+# inheriting here from the protobuf rpc file which is generated
+class ChatApp(rpc.ChatAppServicer):
 
     def __init__(self):
 
-        # A dictionary with key: username, value: user's pending messages queue. 
+        # A dictionary with key: username, value: user's pending messages queue.
         self.messages = {}
 
         # A list with all of account usernames.
@@ -20,7 +26,6 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
         # A list with usernames of accounts that are currently logged in.
         self.live_users = []
 
-
     def createAccount(self, request, context):
         """Create an account. (c|<username>)"""
 
@@ -28,13 +33,15 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         # Check if the username is already in use.
         if request.username in self.accounts:
-            msg = colored(f"\nAccount {request.username} already exists!\n", "red")
+            msg = colored(
+                f"\nAccount {request.username} already exists!\n", "red")
             print(f"\nUser {request.username} account creation rejected\n")
             return app.ServerReply(message=msg)
 
         # Check that the username is a valid alphanumeric.
         if not re.fullmatch("\w{2,20}", request.username):
-            msg = colored(f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
+            msg = colored(
+                f"\nUsername must be alphanumeric and 2-20 characters!\n", "red")
             print(f"\nUser {request.username} account creation rejected\n")
             return app.ServerReply(message=msg)
 
@@ -44,7 +51,6 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
         print(f"\nUser {request.username} account created\n")
 
         return app.ServerReply(message=msg)
-
 
     def logIn(self, request: app.Account, context):
         """Log in as a specific user. (l|<username>)"""
@@ -66,13 +72,12 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
             return app.LoginReply(success=False, message=msg)
 
         # Log in as the given user.
-        else: 
+        else:
             self.live_users.append(request.username)
             msg = f"\nLogin successful - welcome back {request.username}!\n"
             msg = colored(msg, "green")
             print(f"\nLogin as user {request.username} completed.\n")
             return app.LoginReply(success=True, message=msg, username=request.username)
-
 
     def listAccounts(self, request, context):
         """List all of the registered users. (u)"""
@@ -81,16 +86,15 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         # Output a list of users, and whether they are currently online.
         if len(list(self.accounts)) > 0:
-            acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                    (colored("(live)", "green") if u in self.live_users else ""))
-                    for u in self.accounts]) + "\n"
-        
+            acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") +
+                                         (colored("(live)", "green") if u in self.live_users else ""))
+                                        for u in self.accounts]) + "\n"
+
         # No registered users on the server.
         else:
             acc_str = colored("\nNo existing users!\n", "red")
 
         return app.ServerReply(message=acc_str)
-
 
     def filterAccounts(self, request, context):
         """Filter accounts using a regex. (f|<filter_regex>)"""
@@ -99,14 +103,14 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         # Find a list of matching accounts.
         fltr = request.filter
-        fun = lambda x: re.fullmatch(fltr, x)
+        def fun(x): return re.fullmatch(fltr, x)
         filtered_accounts = list(filter(fun, self.accounts))
 
         # Output a list of users, and whether they are currently online.
         if len(list(filtered_accounts)) > 0:
-            acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                    (colored("(live)", "green") if u in self.live_users else ""))
-                    for u in filtered_accounts]) + "\n"
+            acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") +
+                                         (colored("(live)", "green") if u in self.live_users else ""))
+                                        for u in filtered_accounts]) + "\n"
 
         # No matching accounts on the server.
         else:
@@ -114,11 +118,11 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         return app.ServerReply(message=acc_str)
 
-
     def sendMessage(self, request: app.Message, context):
         """Send a message to a specified other user. (s|<username>|<message>)"""
 
-        print(f"user {request.senderName} requesting message to user {request.recipientName}")
+        print(
+            f"user {request.senderName} requesting message to user {request.recipientName}")
 
         # Check if the recipient is a registered user and send message.
         if request.recipientName in self.accounts:
@@ -126,28 +130,30 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
                 self.messages[request.recipientName].append(request)
             else:
                 self.messages[request.recipientName] = [request]
-            msg = colored(f"\nMessage sent to {request.recipientName}.\n", "green")
+            msg = colored("\nMessage sent!\n", "green")
             print(f"user {request.senderName} message to user {request.recipientName} sent")
 
         # Recipient is not a registered user.
         else:
-            msg = colored("\nMessage failed to send! Verify recipient username.\n", "red")
-            print(f"user {request.senderName} message to user {request.recipientName} denied")
-        
+            msg = colored(
+                "\nMessage failed to send! Verify recipient username.\n", "red")
+            print(
+                f"user {request.senderName} message to user {request.recipientName} denied")
+
         return app.ServerReply(message=msg)
-    
 
     def deleteAccount(self, request: app.Account, context):
         """Delete the current user's account. (d|<confirm_username>)"""
-        
+
         print(f"\nUser {request.username} requesting account deletion.\n")
 
         # User can be deleted. Remove from associated data structures.
         if request.username in self.accounts:
             self.accounts.remove(request.username)
-            if self.messages.get(request.username): 
+            if self.messages.get(request.username):
                 self.messages.pop(request.username)
-            msg = colored(f"\nAccount {request.username} successfully deleted!\n", "green")
+            msg = colored(
+                f"\nAccount {request.username} successfully deleted!\n", "green")
             print(f"\nUser {request.username} account deleted.\n")
 
         # User has already been deleted.
@@ -157,7 +163,6 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         return app.ServerReply(message=msg)
 
-
     def listenForMessages(self, request_iterator, context):
         """Stream run in a thread by client, listens for messages."""
 
@@ -165,12 +170,12 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         # Polls while user is still online.
         while context.is_active():
-            
+
             # Stream messages to the client one at a time.
             if self.messages.get(request_iterator.username):
                 msg = self.messages[request_iterator.username].pop(0)
                 yield msg
-        
+
         # Disconnect the client.
         self.live_users.remove(request_iterator.username)
 
