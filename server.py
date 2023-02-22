@@ -20,6 +20,14 @@ def create_account(msg_list, connection):
         msg = (colored("\nInvalid arguments! Usage: c|<username>\n", "red"))
         connection.send(msg.encode('UTF-8'))
         return 
+    
+    curr_users = check_live_users()
+    init_user = get_account(connection)
+
+    if init_user in curr_users: 
+        msg = (colored("\nPlease disconnect first!\n", "red"))
+        connection.send(msg.encode('UTF-8'))
+        return 
 
     username = msg_list[1]
 

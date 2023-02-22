@@ -59,7 +59,7 @@ class Client:
 
                 # Check if user is already logged in.
                 if self.loggedIn:
-                    print(colored("\nPlease log out first!\n", "red"))
+                    print(colored("\nPlease disconnect first!\n", "red"))
                     continue
 
                 msg = self.conn.createAccount(app.Account(username=msg_list[1]))
