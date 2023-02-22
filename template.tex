@@ -153,5 +153,32 @@ As we began working on the gRPC version, we initially were surprised by the newn
 
 Furthermore, we noticed that the gRPC version was much more resilient than the socketed version of the chat app. Killing the server, or at least causing it to throw an error, was much more straightforward using a malicious prompt in the socketed app, whereas with gRPC no such effect would occur on the server side --- if anything, there would be an error on the client side that would force clients to reconnect, which is far more desired than any sort of error on the server side.
 
-Thus, overall, we felt that gRPC was harder to get attuned to, but led to significant rewards in terms of robustness and maintainability. Shifting to performance, we also believe that.
+Thus, overall, we felt that gRPC was harder to get attuned to, but led to significant rewards in terms of robustness and maintainability. 
+
+\section{Performance Testing}
+One way we aimed to test the performance of our program was to measure the amount of messages that can be sent in a given amount of time. The way we implemented this is by having a user repeatedly send messages to themselves for 10 seconds upon login, and then record how many messages had been sent in that time constraint. We implemented this in the socketed app as follows, immediately after a successful login:
+\begin{python}
+startTime = time.time()
+nMsgs = 0
+while time.time() - startTime < 10:
+	send_msg(connection, username, "hello")
+	nMsgs += 1
+print(f"messages in 10s: {nMsgs}")
+\end{python}
+In our gRPC we did this very similarly, running the following code upon a successful login:
+\begin{python}
+startTime = time.time()
+nMsgs = 0
+while time.time() - startTime < 10:
+	msg = app.Message()
+	msg.senderName = self.username
+	msg.recipientName = self.username
+	msg.message = "hello"
+	response = self.conn.sendMessage(msg)
+	nMsgs += 1
+print(f"messages in 10s: {nMsgs}")
+\end{python}
+For the socketed version, we ran 3 trials, which resulted in a total of 65662, 68311, and 65249 messages being sent per trial. For the gRPC version, we also ran 3 trials, with a total of 288, 311, and 363 messages being sent per trial. It's thus clear that our gRPC app sends messages at a rate orders of magnitude slower than that of our socketed app. Using similar tests, we also found analogous behavior for several other methods in the applications (e.g. creating an account, filtering accounts, etc.). One potential explanation for this behavior is the transfer buffer size of each application. In our socketed application, this size is the constant 4096 (4KB), whereas when researching gRPC buffer sizes, it seemed to be around 4MB (but potentially smaller). This factor appears to be the most crucial in explaining discrepancies in performance between our two application variants, but some additional explanations could lie in differences between the Python grpc and socket packages, alongside other sources of slowdown in our methods between the two applications.
+\section{Unit Testing}
+Finally, we made sure to test our application for robustness against non-Byzantine errors and for correct behavior. In order to access the command prompt most simply and observe behaviors one-by-one, we wrote a unit test suite in $tests.txt$ and ran each line within 9 distinct sequences of tests designed to stress one specific part of our program (such as creating an account or filtering messages). We then compared the output of both the gRPC and socketed programs (which are semantically equivalent), and made sure this mtched our expected output.
 \end{document}
