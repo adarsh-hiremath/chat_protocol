@@ -40,7 +40,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
 
         # Register the user.
         self.accounts.append(request.username)
-        msg = colored(f"\nWelcome, {request.username}! Please log in. \n", "green")
+        msg = colored(f"\nNew account created! User ID: {request.username}. Please log in.\n", "green")
         print(f"\nUser {request.username} account created\n")
 
         return app.ServerReply(message=msg)
@@ -126,7 +126,7 @@ class ChatApp(rpc.ChatAppServicer):  # inheriting here from the protobuf rpc fil
                 self.messages[request.recipientName].append(request)
             else:
                 self.messages[request.recipientName] = [request]
-            msg = colored("\nMessage sent!\n", "green")
+            msg = colored(f"\nMessage sent to {request.recipientName}.\n", "green")
             print(f"user {request.senderName} message to user {request.recipientName} sent")
 
         # Recipient is not a registered user.

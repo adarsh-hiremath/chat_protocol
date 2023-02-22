@@ -78,8 +78,7 @@ class Client:
             # Usage: l|<username>
             elif op_code == 'l':
                 if len(msg_list) != 2:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   l|<username>\n", "red"))
+                    print(colored("\nInvalid arguments! Usage: l|<username>\n", "red"))
                     continue
 
                 # Check if user is already logged in
@@ -100,11 +99,14 @@ class Client:
             # Usage: s|<recipient_username>|<message>
             elif op_code == 's':
                 if len(msg_list) != 3:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   s|<recipient_username>|<message>\n", "red"))
+                    print(colored("\nInvalid arguments! Usage: s|<recipient_username>|<message>\n", "red"))
                     continue
 
                 # Initialize and send the message.
+                if not self.loggedIn:
+                    print(colored("\nPlease log in to send a message!\n", "red"))
+                    continue
+
                 msg = app.Message()
                 msg.senderName = self.username
                 msg.recipientName = msg_list[1]

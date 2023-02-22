@@ -47,11 +47,10 @@ Login successful - welcome back adarsh!
 
 --2
 c|andrew|fsdjfsidj
-Invalid number of arguments!
-Usage:   c|<username>
+Invalid arguments! Usage: c|<username>
 
 c|andrew
-Welcome, andrew! Please log in.
+New account created! User ID: andrew. Please log in.
 
 l|andrew|fshijf
 Invalid arguments! Usage: l|<username>
@@ -71,15 +70,14 @@ c|adarsh
 Welcome, adarsh! Please log in.
 
 l
-Usage:   l|<username>
+Invalid arguments! Usage: l|<username>
 
 l|adarsh
 Login successful - welcome back adarsh!
 
 --2
 c|andrew|fsdjfsidj
-Invalid number of arguments!
-Usage:   c|<username>
+Invalid arguments! Usage: c|<username>
 
 c|andrew
 Welcome, andrew! Please log in.
@@ -87,36 +85,52 @@ Welcome, andrew! Please log in.
 l|andrew|fshijf
 Invalid arguments! Usage: l|<username>
 
+l|andrew
+
 s
+Invalid arguments! Usage: s|<recipient_username>|<message>
 
 s|jashfdsj
+Invalid arguments! Usage: s|<recipient_username>|<message>
 
 s|skfdjjfsd|kjafskfj|fs
+Invalid arguments! Usage: s|<recipient_username>|<message>
 
 s|bob|hello
+Message failed to send! Verify recipient username.
 
 s|adarsh|hello
+Message sent to adarsh.
 
 --1
+
+[andrew] hello
 
 s|andrew|goodbye
 
 --2
 
+[adarsh] goodbye
 --------------------------------------------------
 
 Test sequence 4: Adversarial message sending
 --1
+
 c|andrew
 
+New account created! User ID: andrew. Please log in.
+
 s|andrew|hello
-(should return that you need to be logged in)
+
+Please log in to send a message!
 
 l|andrew
 
-s|adarsh|hello
-(should return that the user does not exist)
+Login successful - welcome back andrew!
 
+s|adarsh|hello
+
+Message failed to send! Verify recipient username.
 
 --------------------------------------------------
 
@@ -125,20 +139,32 @@ Test sequence 5: Message queueing
 --1 
 c|adarsh
 
+New account created! User ID: adarsh. Please log in.
+
 l|adarsh
+
+Login successful - welcome back adarsh!
 
 --2
 c|andrew
 
+New account created! User ID: andrew. Please log in.
+
 --1
 s|andrew|welcome to the chat server
+
+Message sent to andrew.
 
 s|andrew|why aren't you here yet
 
 --2
 l|andrew
 
-(should send both of the messages through)
+Login successful - welcome back andrew!
+
+[adarsh] welcome to the chat server
+
+[adarsh] why aren't you here yet
 
 --1
 <ctrl-C>
@@ -150,7 +176,9 @@ s|adarsh|hi why did you leave
 --1
 l|adarsh
 
-(should receive the one message)
+Login successful - welcome back adarsh!
+
+[andrew]  hi why did you leave
 
 
 --------------------------------------------------
@@ -160,19 +188,31 @@ Test sequence 6: Account listing
 --1
 c|andrew
 
+New account created! User ID: andrew. Please log in.
+
 l|andrew
+
+Login successful - welcome back andrew!
 
 --2
 c|adarsh
 
+New account created! User ID: andrew. Please log in.
+
 --3
 c|waldo
 
+New account created! User ID: andrew. Please log in.
+
 l|waldo
+
+Login successful - welcome back waldo!
 
 u
 
-(should list all 3, with all but adarsh as live)
+andrew (live)
+adarsh
+waldo (live)
 
 --------------------------------------------------
 
@@ -181,19 +221,30 @@ Test sequence 7: Account filtering
 --1
 c|andrew
 
+New account created! User ID: andrew. Please log in.
+
 l|andrew
+
+Login successful - welcome back andrew!
 
 --2
 c|adarsh
 
+New account created! User ID: andrew. Please log in.
+
 --3
 c|waldo
 
+New account created! User ID: andrew. Please log in.
+
 l|waldo
+
+Login successful - welcome back waldo!
 
 f|a.*
 
-(only lists andrew and adarsh)
+andrew (live)
+adarsh
 
 
 --------------------------------------------------
@@ -203,14 +254,24 @@ Test sequence 8: Account deletion
 --1
 c|andrew
 
+New account created! User ID: andrew. Please log in.
+
 l|andrew
 
+Login successful - welcome back andrew!
+
 d|andrew
+
+Account andrew successfully deleted!
+
 <system exit>
 
 --1 
 l|andrew
-(should say account does not exist)
+
+User andrew does not exist. Please create an account.
+or
+User andrew is not a valid user, please try again.
 
 
 --------------------------------------------------
@@ -220,18 +281,29 @@ Test sequence 9: Adversarial account deletion
 --1
 c|andrew
 
+New account created! User ID: andrew. Please log in.
+
 l|andrew
 
+Login successful - welcome back andrew!
 
 --2
 
 d|waldo
-(should give some error msg)
+You can only delete your own account. 
+or 
+Please log in first!
 
 c|adarsh
 
+New account created! User ID: adarsh. Please log in.
+
 l|adarsh 
 
-d|andrew
-(should give another error message)
+Login successful - welcome back adarsh!
 
+d|andrew
+
+You can only delete your own account.
+or
+Incorrect username for confirmation.
