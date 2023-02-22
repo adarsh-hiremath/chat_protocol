@@ -49,7 +49,13 @@ $ ipconfig getifaddr en1
 
 Next, in server.py, replace ip = "10.250.129.194" with the IP address you obtained in the above step. Set the port number to port = 50051 (or any consistent number you want). Do the same for client.py as well. 
 
+Finally, turn off your Firewall so that your machine can accept incoming network connections. 
+
 ## How to Use
+
+First, run server.py on the machine you wnat to host your server on. Then, run client.py on all the machines you want to be clients. 
+
+Congratulations! You've now established a connection between your client and server. You can begin making commands by using the following usage. 
 
 | Syntax | Description |
 | --- | ----------- |
