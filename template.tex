@@ -97,7 +97,7 @@ To keep our wire protocol simple and minimize code repetition, we decided to abs
         msg = list_accounts()
 \end{python}
 
-Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is a snippet from our login method with a helper function $verify_dupes(connection)$: 
+Additionally, implementing our wire protocol using helper functions allowed us to easily make our server side send information to the user or print information in the console when applicable. In this case, our helper functions return information to print on the server and actually send information to the appropriate client within the function body. Here is a snippet from our login method with a helper function $verify\_dupes(connection)$: 
 
 \begin{python}
     def login(msg_list, connection):
