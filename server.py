@@ -169,10 +169,8 @@ def filter_accounts(msg_list):
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: f|<filter_regex>\n", "red"))
         return msg
-    
-    request = msg_list[1]
 
-    fltr = request.filter
+    fltr = msg_list[1]
     fun = lambda x: re.fullmatch(fltr, x)
     filtered_accounts = list(filter(fun, accounts))
 
