@@ -153,7 +153,7 @@ class Client:
             elif op_code == 'u':
                 if len(msg_list) != 1:
                     print(invalid_args_msg)
-                    print(colored("Usage:  u\n", "red"))
+                    print(colored("Usage: u\n", "red"))
                     continue
                 response = self.conn.listAccounts(app.Empty())
                 print(response.message)
