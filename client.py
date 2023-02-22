@@ -38,7 +38,7 @@ def Main():
             sockets_list, [], [])
 
         for socks in read_sockets:
-            
+
             # Display messages received from the server. 
             if socks == server:
                 msg = socks.recv(4096)

@@ -106,10 +106,22 @@ def list_accounts():
 
     return acc_str
 
+def verify_dupes(connection):
+    for username in logged_in: 
+        if conn_refs[username] == connection:
+            return True
+    return False
+
 # Check that the user is not already logged in, log in to a particular user, and deliver unreceived messages if applicable.
 def login(msg_list, connection): 
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: l|<username>\n", "red"))
+        return msg
+    
+    check_duplicate = verify_dupes(connection)
+    
+    if check_duplicate == True: 
+        msg = (colored("\nPlease log out first!\n", "red"))
         return msg
 
     username = msg_list[1]
@@ -144,6 +156,7 @@ def get_account(connection):
     for username in conn_refs:
         if conn_refs[username] == connection:
             return username
+    return None
 
 # Deliver pending messages to a user.     
 def deliver_pending_messages(recipient_name):
