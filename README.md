@@ -33,10 +33,21 @@ found here. The gRPC implementation is in grpcApp.
 To clone and run this application, you'll need [Python 3.7.2](https://www.python.org/downloads/release/python-372/). We have a list of requirements which you can find in the requirements.txt file. To install these requirements, run the following in your command line: 
 
 ```bash
-$ pip install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
-Next, you'll need to set the appropriate IP address and port. 
+Next, you'll need to set the appropriate IP address and port number in server.py and client.py (for both the regular implementation and the gRPC implementation).
+
+Run the following command to get your private IP address (on wireless networks): 
+```bash
+$ ipconfig getifaddr en0
+```
+Run this command for wired networks: 
+```bash
+$ ipconfig getifaddr en1
+```
+
+Next, in server.py, replace ip = "10.250.129.194" with the IP address you obtained in the above step. Set the port number to port = 50051 (or any consistent number you want). Do the same for client.py as well. 
 
 ## How to Use
 
