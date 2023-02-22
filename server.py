@@ -20,16 +20,14 @@ def create_account(msg_list, connection):
     """Create an account, and associate with the appropriate socket. (c|<username>)"""
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: c|<username>\n", "red"))
-        connection.send(msg.encode('UTF-8'))
-        return 
+        return msg
     
-    curr_users = check_live_users()
+    update_live_users()
     init_user = get_account(connection)
 
-    if init_user in curr_users: 
+    if init_user in logged_in: 
         msg = (colored("\nPlease disconnect first!\n", "red"))
-        connection.send(msg.encode('UTF-8'))
-        return 
+        return msg
 
     username = msg_list[1]
 
@@ -57,19 +55,18 @@ def delete_account(msg_list):
 
     username = msg_list[1]
 
-    username = msg_list[1]
     print(f"\nUser {username} requesting account deletion.\n")
 
     if username in accounts: 
         accounts.remove(username)
+        logged_in.remove(username)
         if pending_messages.get(username):
             pending_messages.pop(username)
         print(f"\nUser {username} account deleted.\n")
         msg = colored(f"\nAccount {username} has been deleted.\n", "green")
         return msg
 
-
-def check_live_users():
+def update_live_users():
     """Check which socket connections are still live."""
     curr_users = []
     for user in conn_refs:
@@ -80,22 +77,19 @@ def check_live_users():
             pass
     
     for user in logged_in: 
-        if user not in logged_in: 
+        if user not in curr_users: 
             logged_in.remove(user)
-
-    return curr_users
-
 
 def list_accounts(): 
     """List all of the registered users and display their status. (u)"""
 
     print(f'\nListing accounts\n')
 
-    curr_users = check_live_users()
+    update_live_users()
 
     if accounts: 
         acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                    (colored("(live)", "green") if u in curr_users else ""))
+                    (colored("(live)", "green") if u in logged_in else ""))
                     for u in accounts]) + "\n"
     
     else: 
@@ -113,9 +107,9 @@ def login(msg_list, connection):
 
     print(f"\nLogin as user {username} requested\n")
     
-    curr_users = check_live_users()
+    update_live_users()
 
-    if username in curr_users: 
+    if username in logged_in: 
         print(f"\nLogin as {username} denied.\n")
         msg = colored(f"\nUser {username} already logged in. Please try again.\n", "red")
         return msg
@@ -128,12 +122,12 @@ def login(msg_list, connection):
     else: 
         conn_refs[username] = connection
         print (f"\nLogin as user {username} completed.\n")
-        logged_in.append(username)
         msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
         if username in pending_messages:
             print(f"\nDelivering pending messages to {username}.\n")
             send_msg(connection, username, colored(f"\nYou have pending messages! Delivering the  messages now...", "green"))
             deliver_pending_messages(username)
+        logged_in.append(username)
         return msg
 
 # Get account from connection refernce by reverse searching the live_users dictionary.
@@ -144,7 +138,7 @@ def get_account(connection):
 
 # Deliver pending messages to a user.     
 def deliver_pending_messages(recipient_name):
-    while pending_messages.get(recipient_name):
+    while pending_messages[recipient_name]:
         conn_refs[recipient_name].send(pending_messages[recipient_name][0].encode('UTF-8')) 
         pending_messages[recipient_name].pop(0)
 
@@ -152,17 +146,16 @@ def deliver_pending_messages(recipient_name):
 def send_msg(connection, recipient_name, msg):
     print(f"\nRequest received to send message to {recipient_name}.\n")
 
-    curr_users = check_live_users()
+    update_live_users()
     init_user = get_account(connection)
 
     if init_user not in logged_in: 
         msg = (colored("\nPlease log in to send a message!\n", "red"))
-        connection.send(msg.encode('UTF-8'))
-        return 
+        return msg
 
     if recipient_name in accounts: 
         sender_name = get_account(connection)
-        if recipient_name in curr_users:
+        if recipient_name in logged_in:
             msg = colored(f"\n[{sender_name}] ", "grey") + msg + "\n"
             conn_refs[recipient_name].send(msg.encode('UTF-8'))
             print(f"\nMessage sent to {recipient_name}.\n")
@@ -170,7 +163,7 @@ def send_msg(connection, recipient_name, msg):
         else:
             msg = colored(f"\n[{sender_name}] ", "grey") + msg
             if recipient_name in pending_messages:
-                pending_messages[recipient_name] = pending_messages[recipient_name].append(msg)
+                pending_messages[recipient_name].append(msg)
             else: 
                 pending_messages[recipient_name] = [msg]
             print(f"\nMessage will be sent to {recipient_name} after the account is online.\n")
@@ -189,16 +182,16 @@ def filter_accounts(msg_list):
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: f|<filter_regex>\n", "red"))
         return msg
+    
+    update_live_users()
 
     fltr = msg_list[1]
     fun = lambda x: re.fullmatch(fltr, x)
     filtered_accounts = list(filter(fun, accounts))
 
-    curr_users = check_live_users()
-
     if len(list(filtered_accounts)) > 0:
         acc_str = "\n" + "\n".join([(colored(f"{u} ", "blue") + 
-                (colored("(live)", "green") if u in curr_users else ""))
+                (colored("(live)", "green") if u in logged_in else ""))
                 for u in filtered_accounts]) + "\n"
         
     else:

@@ -25,7 +25,6 @@ class Client:
     def __listen_for_messages(self):
         """Thread that listens for messages from other clients."""
         
-        # Listens for messages sent from clients to the current client.
         for msg in self.conn.listenForMessages(app.Account(username=self.username)):
             str = colored(f"[{msg.senderName}] ", "grey")
             print(f"{str} {msg.message}\n")
@@ -33,6 +32,18 @@ class Client:
 
     def send_message(self):
         """Gather input and communicate with the client."""
+        
+        # Welcome message. 
+        msg = "\nWelcome to the chat application! Begin by logging in or creating an account. Below, you will find a list of supported commands :\n"
+        msg += "\nCreate an account.        c|<username>"
+        msg += "\nLog into an account.      l|<username>"
+        msg += "\nSend a message.           s|<recipient_username>|<message>"
+        msg += "\nFilter accounts.          f|<filter_regex>"
+        msg += "\nDelete your account.      d|<confirm_username>"
+        msg += "\nList users and names.     u"
+        msg += "\nUsage help (this page).   h\n"
+        msg = colored(msg, 'yellow')
+        print(msg)
 
         # Loop indefinitely until client quits.
         while True:
@@ -41,9 +52,7 @@ class Client:
             invalid_args_msg = colored("\nInvalid number of arguments!", "red")
 
             # Get input from user, then preprocess it.
-            msg1 = colored(f"", "grey")
-            msg2 = colored("\nCreate an account or log in: \n", "grey", attrs=["bold"])
-            msg_str = input(msg1 if self.loggedIn else msg2)
+            msg_str = input("")
             msg_list = msg_str.split('|')
             msg_list = [elt.strip() for elt in msg_list]
             op_code = msg_list[0].strip()

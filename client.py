@@ -29,6 +29,7 @@ def Main():
 
     # Main loop for clients to receive and send messages to the server.
     while True:
+
         # List of input streams. 
         sockets_list = [sys.stdin, server]
         
@@ -37,6 +38,7 @@ def Main():
             sockets_list, [], [])
 
         for socks in read_sockets:
+            
             # Display messages received from the server. 
             if socks == server:
                 msg = socks.recv(4096)

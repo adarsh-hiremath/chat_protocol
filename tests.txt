@@ -1,11 +1,22 @@
-UNIT TESTS CONDUCTED
-Format: 
+UNIT TESTS
+Below we have a series of unit tests that place a strain on the various functions
+of our chat application. Note that these apply to both versions of our application
+(socketed and gRPC), and that some of the later testing sequences assume the correctness
+of other functionalities (e.g. login hinges on creation, sending hinges on login). 
+Finally, note that these tests are run using the client-side CLI, but that
+the output of these tests is observed on both the client and the server side, 
+with an expectation of no errors or crashes on the server side. We also avoid
+doing argument formatting errors beyond the first 2 test sequences, simply because
+all of our code processes arguments in the same way.
+
+When running pieces of each test in the CLI, we use the following syntax: 
 <command>
 <expected output>
 
------ : demarcates a new sequence of tests
---n: demarcates the user
+Furthermore, --n: demarcates the different
 
+
+--------------------------------------------------
 
 Test sequence 1: Account creation
 --1
@@ -16,10 +27,11 @@ Usage:   c|<username>
 c|adarsh
 Welcome, adarsh! Please log in.
 
+--------------------------------------------------
 
------
 Test sequence 2: Login
 --1
+
 c
 Invalid number of arguments!
 Usage:   c|<username>
@@ -47,8 +59,8 @@ Invalid arguments! Usage: l|<username>
 l|andrew
 Login successful - welcome back andrew!
 
+--------------------------------------------------
 
------
 Test sequence 3: Simple sending + receiving messages
 --1
 c
@@ -91,21 +103,135 @@ s|andrew|goodbye
 
 --2
 
+--------------------------------------------------
 
------ 
 Test sequence 4: Adversarial message sending
 --1
 c|andrew
 
+s|andrew|hello
+(should return that you need to be logged in)
 
------
+l|andrew
+
+s|adarsh|hello
+(should return that the user does not exist)
+
+
+--------------------------------------------------
+
 Test sequence 5: Message queueing
 
+--1 
+c|adarsh
 
------
-Test sequence 6: Account listening
+l|adarsh
+
+--2
+c|andrew
+
+--1
+s|andrew|welcome to the chat server
+
+s|andrew|why aren't you here yet
+
+--2
+l|andrew
+
+(should send both of the messages through)
+
+--1
+<ctrl-C>
+Keyboard interrupt
+
+--2 
+s|adarsh|hi why did you leave
+
+--1
+l|adarsh
+
+(should receive the one message)
 
 
------ 
+--------------------------------------------------
+
+Test sequence 6: Account listing
+
+--1
+c|andrew
+
+l|andrew
+
+--2
+c|adarsh
+
+--3
+c|waldo
+
+l|waldo
+
+u
+
+(should list all 3, with all but adarsh as live)
+
+--------------------------------------------------
+
 Test sequence 7: Account filtering
+
+--1
+c|andrew
+
+l|andrew
+
+--2
+c|adarsh
+
+--3
+c|waldo
+
+l|waldo
+
+f|a.*
+
+(only lists andrew and adarsh)
+
+
+--------------------------------------------------
+
+Test sequence 8: Account deletion
+
+--1
+c|andrew
+
+l|andrew
+
+d|andrew
+<system exit>
+
+--1 
+l|andrew
+(should say account does not exist)
+
+
+--------------------------------------------------
+
+Test sequence 9: Adversarial account deletion
+
+--1
+c|andrew
+
+l|andrew
+
+
+--2
+
+d|waldo
+(should give some error msg)
+
+c|adarsh
+
+l|adarsh 
+
+d|andrew
+(should give another error message)
 

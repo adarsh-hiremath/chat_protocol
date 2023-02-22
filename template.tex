@@ -119,7 +119,7 @@ Additionally, implementing our wire protocol using helper functions allowed us t
         return acc_str
 \end{python}
 
-In our $list\_accounts()$ function, we have a helper function called $check\_live\_users()$ which returns a list of all the users that are currently logged in by manually pinging the sockets. We use this list to determine whether a user is currently logged in or not. If a user is logged in, we print their username with a green "live" identifier. If a user is not logged in, we print their username in blue. Similar helper functions are implemented for every operation in our wire protocol.
+In our $list\_accounts()$ function, we have a helper function called $check\_live\_users()$ which returns a list of all the users that have valid socket connections by manually pinging the sockets. We use this list to determine whether a user is currently logged in or not. If a user is logged in, we print their username with a green "live" identifier. If a user is not logged in, we print their username in blue. Similar helper functions are implemented for every operation in our wire protocol.
 
 \section{Account Handling}
 
@@ -129,10 +129,11 @@ We have three main data structures that we use throughout our chat application.
 \begin{itemize}
     \item $pending\_messages$: a dictionary with username as key and pending messages as values. 
     \item $accounts$: a list of account names. 
-    \item $live\_users$: A dictionary with usernames as keys and socket connection references as values.
+    \item $conn\_refs$: a dictionary with usernames as keys and socket connection references as values.
+    \item $logged\_in$: a list of users that are currently logged in. 
 \end{itemize}
 
-We decided to use a single dictionary for pending messages to handle the scenario where a user is offline. Storing all messages sent and received in a dictionary would be a waste of space because our server only cares if the user has seen the message intended for them. When a user goes online, our program checks whether there are any pending messages to be sent to them and sends messages accordingly. We have a single list for account names in order to implement the listing users portion of the assignment. Finally, our live users dictionary stores all the users that are currently logged in so that the server can check if a user is logged in before sending a message to them. We also store the references to the socket connection in order for the server to send messages over the right connection.
+We decided to use a single dictionary for pending messages to handle the scenario where a user is offline. Storing all messages sent and received in a dictionary would be a waste of space because our server only cares if the user has seen the message intended for them. When a user goes online, our program checks whether there are any pending messages to be sent to them and sends messages accordingly. We have a single list for account names in order to implement the listing users portion of the assignment. Our connection references dictionary stores all the users along with their corresponding connection references to manage communication between multiple clients. We also store the references to the socket connection in order for the server to send messages over the right connection. Finally, our logged in list stores a list of all the users that are currently logged to handle validation. 
 
 \section{Original Wire Protocol vs. gRPC}
 \end{document}

@@ -19,13 +19,14 @@ to-end client-server chat application, first with our
 own wire protocol and later with gRPC. 
 * As currently implemented, our chat
 application supports the following:
-  - Account creation, login, deletion, and deactivation.
+  - Account creation, login, deletion, and disconnection.
   - Sending messages between accounts, even when
   some accounts are offline.
   - Listing or filtering all users who have created
 accounts.
 * The source code for our chat application can be
-found here. The gRPC implementation is in grpcApp. 
+found in the main directory here. The gRPC implementation is in grpcApp.
+* We have done extensive manual unit testing, as documented in tests.txt 
 * You can also find our project writeup at template.pdf
   
 ## Setup
