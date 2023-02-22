@@ -1,0 +1,111 @@
+UNIT TESTS CONDUCTED
+Format: 
+<command>
+<expected output>
+
+----- : demarcates a new sequence of tests
+--n: demarcates the user
+
+
+Test sequence 1: Account creation
+--1
+c
+Invalid number of arguments!
+Usage:   c|<username>
+
+c|adarsh
+Welcome, adarsh! Please log in.
+
+
+-----
+Test sequence 2: Login
+--1
+c
+Invalid number of arguments!
+Usage:   c|<username>
+
+c|adarsh
+Welcome, adarsh! Please log in.
+
+l
+Usage:   l|<username>
+
+l|adarsh
+Login successful - welcome back adarsh!
+
+--2
+c|andrew|fsdjfsidj
+Invalid number of arguments!
+Usage:   c|<username>
+
+c|andrew
+Welcome, andrew! Please log in.
+
+l|andrew|fshijf
+Invalid arguments! Usage: l|<username>
+
+l|andrew
+Login successful - welcome back andrew!
+
+
+-----
+Test sequence 3: Simple sending + receiving messages
+--1
+c
+Invalid number of arguments!
+Usage:   c|<username>
+
+c|adarsh
+Welcome, adarsh! Please log in.
+
+l
+Usage:   l|<username>
+
+l|adarsh
+Login successful - welcome back adarsh!
+
+--2
+c|andrew|fsdjfsidj
+Invalid number of arguments!
+Usage:   c|<username>
+
+c|andrew
+Welcome, andrew! Please log in.
+
+l|andrew|fshijf
+Invalid arguments! Usage: l|<username>
+
+s
+
+s|jashfdsj
+
+s|skfdjjfsd|kjafskfj|fs
+
+s|bob|hello
+
+s|adarsh|hello
+
+--1
+
+s|andrew|goodbye
+
+--2
+
+
+----- 
+Test sequence 4: Adversarial message sending
+--1
+c|andrew
+
+
+-----
+Test sequence 5: Message queueing
+
+
+-----
+Test sequence 6: Account listening
+
+
+----- 
+Test sequence 7: Account filtering
+

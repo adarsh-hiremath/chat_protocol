@@ -11,8 +11,10 @@ pending_messages = {}
 accounts = []
 
 # A dictionary with usernames as keys and connection references as values.
-live_users = {}
+conn_refs = {}
 
+# A dictionary with logged in users. 
+logged_in = []
 
 def create_account(msg_list, connection): 
     """Create an account, and associate with the appropriate socket. (c|<username>)"""
@@ -46,7 +48,6 @@ def create_account(msg_list, connection):
     msg = colored (f"\nNew account created! User ID: {username}. Please log in.\n", "green")
     return msg
 
-
 def delete_account(msg_list): 
     """Delete the current user's account. (d|<confirm_username>)"""
 
@@ -71,12 +72,17 @@ def delete_account(msg_list):
 def check_live_users():
     """Check which socket connections are still live."""
     curr_users = []
-    for user in live_users:
+    for user in conn_refs:
         try:
-            live_users[user].send("".encode('UTF-8'))
+            conn_refs[user].send("".encode('UTF-8'))
             curr_users.append(user)
         except:
             pass
+    
+    for user in logged_in: 
+        if user not in logged_in: 
+            logged_in.remove(user)
+
     return curr_users
 
 
@@ -102,7 +108,7 @@ def login(msg_list, connection):
     if len(msg_list) != 2: 
         msg = (colored("\nInvalid arguments! Usage: l|<username>\n", "red"))
         return msg
-    
+
     username = msg_list[1]
 
     print(f"\nLogin as user {username} requested\n")
@@ -120,8 +126,9 @@ def login(msg_list, connection):
         return msg
     
     else: 
-        live_users[username] = connection
+        conn_refs[username] = connection
         print (f"\nLogin as user {username} completed.\n")
+        logged_in.append(username)
         msg = colored(f"\nLogin successful - welcome back {username}!\n", "green")
         if username in pending_messages:
             print(f"\nDelivering pending messages to {username}.\n")
@@ -131,14 +138,14 @@ def login(msg_list, connection):
 
 # Get account from connection refernce by reverse searching the live_users dictionary.
 def get_account(connection):
-    for username in live_users:
-        if live_users[username] == connection:
+    for username in conn_refs:
+        if conn_refs[username] == connection:
             return username
 
 # Deliver pending messages to a user.     
 def deliver_pending_messages(recipient_name):
     while pending_messages.get(recipient_name):
-        live_users[recipient_name].send(pending_messages[recipient_name][0].encode('UTF-8')) 
+        conn_refs[recipient_name].send(pending_messages[recipient_name][0].encode('UTF-8')) 
         pending_messages[recipient_name].pop(0)
 
 # Send a message to the given user.
@@ -146,12 +153,18 @@ def send_msg(connection, recipient_name, msg):
     print(f"\nRequest received to send message to {recipient_name}.\n")
 
     curr_users = check_live_users()
+    init_user = get_account(connection)
+
+    if init_user not in logged_in: 
+        msg = (colored("\nPlease log in to send a message!\n", "red"))
+        connection.send(msg.encode('UTF-8'))
+        return 
 
     if recipient_name in accounts: 
         sender_name = get_account(connection)
         if recipient_name in curr_users:
             msg = colored(f"\n[{sender_name}] ", "grey") + msg + "\n"
-            live_users[recipient_name].send(msg.encode('UTF-8'))
+            conn_refs[recipient_name].send(msg.encode('UTF-8'))
             print(f"\nMessage sent to {recipient_name}.\n")
             msg = colored(f"\nMessage sent to {recipient_name}.\n", "green")
         else:
@@ -160,7 +173,6 @@ def send_msg(connection, recipient_name, msg):
                 pending_messages[recipient_name] = pending_messages[recipient_name].append(msg)
             else: 
                 pending_messages[recipient_name] = [msg]
-            print(pending_messages)
             print(f"\nMessage will be sent to {recipient_name} after the account is online.\n")
             msg = colored(f"\nMessage will be delivered to {recipient_name} after the account is online.\n", "green")
         return msg
