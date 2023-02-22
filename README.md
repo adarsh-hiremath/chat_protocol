@@ -30,7 +30,7 @@ found here. The gRPC implementation is in grpcApp.
   
 ## Setup
 
-To clone and run this application, you'll need [Python 3.7.2](https://www.python.org/downloads/release/python-372/). We have a list of requirements which you can find in the requirements.txt file. To install these requirements, run the following in your command line: 
+To clone and run this application, you'll need [Python](https://www.python.org/downloads/release/python-372/). We have a list of requirements which you can find in the requirements.txt file. To install these requirements, run the following in your command line: 
 
 ```bash
 $ pip3 install -r requirements.txt
