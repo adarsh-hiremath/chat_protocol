@@ -107,6 +107,8 @@ def list_accounts():
     return acc_str
 
 def verify_dupes(connection):
+    """Verify if a user is already logged in when they try to log in."""
+    
     for username in logged_in: 
         if conn_refs[username] == connection:
             return True
