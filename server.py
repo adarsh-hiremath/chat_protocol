@@ -46,14 +46,19 @@ def create_account(msg_list, connection):
     msg = colored (f"\nNew account created! User ID: {username}. Please log in.\n", "green")
     return msg
 
-def delete_account(msg_list): 
+def delete_account(msg_list, connection): 
     """Delete the current user's account. (d|<confirm_username>)"""
 
     if len(msg_list) != 2: 
-        msg = (colored("\nInvalid arguments! Usage: d|<confirm_account>\n", "red"))
+        msg = (colored("\nInvalid arguments! Usage: d|<confirm_username>\n", "red"))
         return msg
 
     username = msg_list[1]
+    init_user = get_account(connection)
+
+    if (init_user != username): 
+        msg = (colored("\nYou can only delete your own account.\n", "red"))
+        return msg
 
     print(f"\nUser {username} requesting account deletion.\n")
 
@@ -66,8 +71,12 @@ def delete_account(msg_list):
         msg = colored(f"\nAccount {username} has been deleted.\n", "green")
         return msg
 
+    else:
+        return (colored("\nIncorrect username for confirmation.\n", "red"))
+
 def update_live_users():
     """Check which socket connections are still live."""
+    
     curr_users = []
     for user in conn_refs:
         try:
@@ -236,7 +245,7 @@ def wire_protocol(connection):
         # Delete an account
         # Usage: d|<confirm_username>
         elif op_code == 'd':
-            msg = delete_account(msg_list)
+            msg = delete_account(msg_list, connection)
     
         # Filter accounts using a certain wildcard.
         # Usage: f|<filter_regex>

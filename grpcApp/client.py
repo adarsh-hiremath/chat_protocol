@@ -62,8 +62,7 @@ class Client:
             # Usage: c|<username>
             if op_code == 'c':
                 if len(msg_list) != 2:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   c|<username>\n", "red"))
+                    print(colored("\nInvalid arguments! Usage: c|<username>\n", "red"))
                     continue
 
                 # Check if user is already logged in.
@@ -130,8 +129,7 @@ class Client:
             # Usage: d|<confirm_username>
             elif op_code == 'd':
                 if len(msg_list) != 2:
-                    print(invalid_args_msg)
-                    print(colored("Usage:   d|<confirm_username>\n", "red"))
+                    print(colored("\nInvalid arguments! Usage: d|<confirm_username>\n", "red"))
                     continue
                 
                 # Ensure user is logged in and uses correct confirmation.
@@ -155,7 +153,7 @@ class Client:
             elif op_code == 'u':
                 if len(msg_list) != 1:
                     print(invalid_args_msg)
-                    print(colored("Usage:   u\n", "red"))
+                    print(colored("Usage:  u\n", "red"))
                     continue
                 response = self.conn.listAccounts(app.Empty())
                 print(response.message)
