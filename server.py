@@ -319,7 +319,7 @@ def wire_protocol(connection):
 
 def Main():
     # Set IP address and local port.
-    ip = "10.250.129.194"
+    ip = "127.0.0.1"
     port = 50051
 
     # Specify the address domain and read properties of the socket.
